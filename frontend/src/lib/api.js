@@ -10,3 +10,13 @@ export const signin = async (signinData) => {
   return response.data;
 };
 
+export const getAuthUser = async () => {
+  try {
+    const response = await axiosInstance.get("/auth/me");
+    return response.data;
+  } catch (error) {
+    // Return null if user is not authenticated
+    return { user: null };
+  }
+};
+
