@@ -13,26 +13,42 @@ const SignInPage = () => {
     rememberMe: false
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [serverError, setServerError] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+    
+    // Clear server error when user starts typing
+    if (serverError) {
+      setServerError('');
+    }
+    
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
   };
 
-  const { signInMutation } = useSignIn();
+  const { signInMutation, isPending } = useSignIn(
+    // onSuccess callback
+    null,
+    // onError callback
+    (error) => {
+      const errorMessage = error.response?.data?.message || 'An error occurred. Please try again.';
+      setServerError(errorMessage);
+    }
+  );
+  
   const handleSubmit = (e) => {
     e.preventDefault();
+    setServerError(''); // Clear previous server errors
     
     // Validate form
     if (!formData.email || !formData.password) {
-      alert('Please fill in all fields!');
+      setServerError('Please fill in all fields!');
       return;
     }
 
-    // TODO: Implement actual login logic
     console.log('Login attempt:', formData);
     signInMutation(formData);
   };
@@ -60,6 +76,13 @@ const SignInPage = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Server Error message */}
+            {serverError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {serverError}
+              </div>
+            )}
+            
             {/* Email field */}
             <InputField 
               type="email" 
@@ -128,8 +151,8 @@ const SignInPage = () => {
 
             {/* Login Button */}
             <div className="pt-2">
-              <Button type="submit" disabled={false}>
-                Login
+              <Button type="submit" disabled={isPending}>
+                {isPending ? 'Signing in...' : 'Login'}
               </Button>
             </div>
           </form>
