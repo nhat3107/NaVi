@@ -23,4 +23,5 @@ const ModerationLogSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("ModerationLog", ModerationLogSchema);
+const ModerationLog = mongoose.model("ModerationLog", ModerationLogSchema);
+export default ModerationLog;

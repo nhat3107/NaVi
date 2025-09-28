@@ -2,13 +2,32 @@ import React, { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Button from '../components/signin-signup-comp/Button'
 import InputField from '../components/signin-signup-comp/InputField'
-import DateButton, { dayOptions, monthOptions, yearOptions } from '../components/signin-signup-comp/DateButton'
+import DateButton, { dayOptions, monthOptions, yearOptions, validateBirthDate } from '../components/signin-signup-comp/DateButton'
 import GenderRadioButton from '../components/signin-signup-comp/GenderRadioButtob'
+import useAuthUser from '../hooks/useAuthUser'
+import { completeOnboarding, logout } from '../lib/api'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 const OnBoardingPage = () => {
   const location = useLocation();
+  const userData = location.state || {}; // get user data from signup page
   const navigate = useNavigate();
-  const userData = location.state || {};
+  const {authUser} = useAuthUser();
+  const queryClient = useQueryClient();
+  const {mutate: onboardingMutation, isPending} = useMutation({
+    mutationFn: completeOnboarding,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["authUser"]});
+      setServerError(''); // Clear any previous server errors
+    },
+    onError: (error) => {
+      console.log(error);
+      // Extract error message from response
+      const errorMessage = error.response?.data?.message || 'An error occurred. Please try again.';
+      setServerError(errorMessage);
+    }
+  });
+
   const [profileData, setProfileData] = useState({
     username: '',
     day: '',
@@ -18,41 +37,135 @@ const OnBoardingPage = () => {
     bio: ''
   });
 
+  const [validationError, setValidationError] = useState('');
+  const [usernameError, setUsernameError] = useState('');
+  const [serverError, setServerError] = useState('');
+
+  // Username validation functions
+  const validateUsername = (username) => {
+    if (!username || username.trim() === '') {
+      return {
+        success: false,
+        message: 'Username is required'
+      };
+    }
+
+    // Check length (minimum 3, maximum 20 characters)
+    if (username.length < 3) {
+      return {
+        success: false,
+        message: 'Username must be at least 3 characters long'
+      };
+    }
+
+    if (username.length > 20) {
+      return {
+        success: false,
+        message: 'Username must not exceed 20 characters'
+      };
+    }
+
+    // Check for spaces specifically
+    if (username.includes(' ')) {
+      return {
+        success: false,
+        message: 'Username cannot contain spaces'
+      };
+    }
+
+    // Check allowed characters: lowercase letters, numbers, underscore, dot
+    const allowedPattern = /^[a-z0-9_.]+$/;
+    if (!allowedPattern.test(username)) {
+      return {
+        success: false,
+        message: 'Username can only contain lowercase letters, numbers, underscore (_), and dot (.)'
+      };
+    }
+
+    return {
+      success: true,
+      message: 'Valid username'
+    };
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    // Clear validation errors when user starts typing
+    if (validationError) {
+      setValidationError('');
+    }
+    if (name === 'username' && usernameError) {
+      setUsernameError('');
+    }
+    if (serverError) {
+      setServerError('');
+    }
+    
     setProfileData(prev => ({
       ...prev,
       [name]: value
     }));
   };
 
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    
+    // Validate username only on blur
+    if (name === 'username') {
+      if (value.trim() === '') {
+        setUsernameError('');
+      } else {
+        const validation = validateUsername(value);
+        setUsernameError(validation.success ? '' : validation.message);
+      }
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    setValidationError(''); // Clear previous errors
+    setServerError(''); // Clear previous server errors
     
-    // Validate form
-    if (!profileData.username) {
-      alert('Please fill in your username!');
+    // Validate username
+    const usernameValidation = validateUsername(profileData.username);
+    if (!usernameValidation.success) {
+      setValidationError(usernameValidation.message);
       return;
     }
 
-    if (!profileData.day || !profileData.month || !profileData.year) {
-      alert('Please select your date of birth!');
+    // Validate birth date
+    const birthDateValidation = validateBirthDate(
+      parseInt(profileData.day), 
+      parseInt(profileData.month), 
+      parseInt(profileData.year)
+    );
+    
+    if (!birthDateValidation.success) {
+      setValidationError(birthDateValidation.message);
       return;
     }
 
     if (!profileData.gender) {
-      alert('Please select your gender!');
+      setValidationError('Please select your gender!');
       return;
     }
 
+    // Format date of birth
+    const dateToString = `${String(profileData.day).padStart(2, '0')}-${String(profileData.month).padStart(2, '0')}-${profileData.year}`;
+
     // Complete registration (for now just show success)
     const completeUserData = {
-      ...userData,
-      ...profileData
+      // ...userData,
+      username: profileData.username,
+      dateOfBirth: dateToString,
+      gender: profileData.gender,
+      bio: profileData.bio
     };
     
     console.log('Complete user registration:', completeUserData);
-    alert('Registration completed successfully!');
+    // alert('Registration completed successfully!');
+    onboardingMutation(completeUserData);
   };
 
   return (
@@ -72,6 +185,19 @@ const OnBoardingPage = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Validation Error message */}
+            {validationError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {validationError}
+              </div>
+            )}
+            
+            {/* Server Error message */}
+            {serverError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {serverError}
+              </div>
+            )}
             {/* Username field */}
             <div>
               <label className="block text-base font-medium text-gray-700 mb-1.5">
@@ -90,9 +216,23 @@ const OnBoardingPage = () => {
                 placeholder="Enter your username" 
                 value={profileData.username}
                 onChange={handleInputChange}
+                onBlur={handleBlur}
                 name="username" 
                 required
               />
+              {usernameError && (
+                <p className="mt-2 text-sm text-red-500 flex items-start gap-1">
+                  <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  {usernameError}
+                </p>
+              )}
+              {!profileData.username && (
+                <p className="mt-1 text-xs text-gray-500">
+                  Username can only contain lowercase letters, numbers, underscore ( _ ), and dot (.)
+                </p>
+              )}
             </div>
 
             {/* Date of birth label */}
@@ -117,6 +257,8 @@ const OnBoardingPage = () => {
                   value={profileData.day}
                   onChange={handleInputChange}
                   name="day"
+                  selectedMonth={parseInt(profileData.month) || null}
+                  selectedYear={parseInt(profileData.year) || null}
                 />
                 <DateButton 
                   placeholder="Month" 
@@ -168,14 +310,25 @@ const OnBoardingPage = () => {
 
             {/* Action buttons */}
             <div className="pt-3 space-y-2.5">
-              <Button type="submit" disabled={false}>
-                Complete
+              <Button type="submit" disabled={isPending}>
+                {isPending ? 'Completing...' : 'Complete'}
               </Button>
               
               {/* Back button */}
               <button
                 type="button"
-                onClick={() => navigate('/signin')}
+                onClick={async () => {
+                  try {
+                    await logout(); // Call logout API to clear JWT cookie
+                    queryClient.setQueryData(['authUser'], null); // Clear client-side auth state
+                    navigate('/signin');
+                  } catch (error) {
+                    console.error('Logout error:', error);
+                    // Force navigation even if logout fails
+                    queryClient.setQueryData(['authUser'], null);
+                    navigate('/signin');
+                  }
+                }}
                 className="w-full py-3 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all"
               >
                 Back to Sign In
@@ -184,13 +337,13 @@ const OnBoardingPage = () => {
           </form>
 
           {/* Show email info */}
-          {/* {userData?.email && (
+          {(userData?.email || authUser?.email) && (
             <div className="mt-2.5 p-2.5 bg-gray-50 rounded-lg">
               <p className="text-xs text-gray-500">
-                Creating account for: <span className="font-medium">{userData.email}</span>
+                Creating profile for: <span className="font-medium">{userData?.email || authUser?.email}</span>
               </p>
             </div>
-          )} */}
+          )}
         </div>
       </div>
     </div>

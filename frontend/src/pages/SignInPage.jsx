@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Button from '../components/signin-signup-comp/Button'
 import InputField from '../components/signin-signup-comp/InputField'
 import { GitHubButton, GoogleButton, FacebookButton } from '../components/signin-signup-comp/OAuthButton'
+import useSignIn from '../hooks/useSignIn'
 
 const SignInPage = () => {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ const SignInPage = () => {
     }));
   };
 
+  const { signInMutation } = useSignIn();
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -32,7 +34,7 @@ const SignInPage = () => {
 
     // TODO: Implement actual login logic
     console.log('Login attempt:', formData);
-    alert('Login functionality will be implemented with backend');
+    signInMutation(formData);
   };
 
   const handleOAuthLogin = (provider) => {

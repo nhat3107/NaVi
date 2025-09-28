@@ -11,4 +11,5 @@ const VideoCallSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("VideoCall", VideoCallSchema);
+const VideoCall = mongoose.model("VideoCall", VideoCallSchema);
+export default VideoCall;

@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema(
   {
-    username: { type: String, required: true, unique: true },
+    username: { type: String, unique: true },
     email: { type: String, required: true, unique: true },
     passwordHash: { type: String, required: true },
-    gender: { type: String},
-    dateOfBirth: { type: String},
+    gender: { type: String, default: ""},
+    dateOfBirth: { type: String, default: ""},
     avatarUrl: { type: String, default: "https://cloudanary.s3.ap-southeast-1.amazonaws.com/basic-avatar.jpg" },
     bio: {type: String, default: ""},
     isOnBoarded: {type: Boolean, default: false},
@@ -21,4 +21,5 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("User", UserSchema);
+const User = mongoose.model("User", UserSchema);
+export default User;

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/signin-signup-comp/Button'
 import InputField from '../components/signin-signup-comp/InputField'
+import useSignUp from '../hooks/useSignUp'
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -16,9 +17,16 @@ const SignUpPage = () => {
   const [showPasswordError, setShowPasswordError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [serverError, setServerError] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    // Clear server error when user starts typing
+    if (serverError) {
+      setServerError('');
+    }
+    
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -108,8 +116,18 @@ const SignUpPage = () => {
     };
   };
 
+  const {signupMutation, isPending, error } = useSignUp(
+    // onSuccess callback
+    null,
+    // onError callback  
+    (error) => {
+      const errorMessage = error.response?.data?.message || 'An error occurred. Please try again.';
+      setServerError(errorMessage);
+    }
+  );
   const handleSubmit = (e) => {
     e.preventDefault();
+    setServerError(''); // Clear previous server errors
     
     // Validate form
     if (!formData.email || !formData.password || !formData.confirmPassword) {
@@ -131,13 +149,9 @@ const SignUpPage = () => {
       return;
     }
 
-    // Navigate to onboarding page with signup data in URL state
-    navigate('/onboarding', {
-      state: {
-        email: formData.email,
-        password: formData.password
-      }
-    });
+    // Call signup mutation - navigation will be handled in the hook on success
+    console.log('Signing up user:', formData);
+    signupMutation(formData);
   };
 
   return (
@@ -157,6 +171,13 @@ const SignUpPage = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Server Error message */}
+            {serverError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {serverError}
+              </div>
+            )}
+            
             <InputField 
               type="email" 
               placeholder="m@example.com" 
@@ -247,8 +268,8 @@ const SignUpPage = () => {
             </div>
 
             <div className="pt-4">
-              <Button type="submit" disabled={false}>
-                Sign Up now!
+              <Button type="submit" disabled={isPending}>
+                {isPending ? 'Creating Account...' : 'Sign Up now!'}
               </Button>
             </div>
           </form>
