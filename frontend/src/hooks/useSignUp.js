@@ -9,13 +9,24 @@ const useSignUp = (onSuccess, onError) => {
   const { mutate, isPending, error } = useMutation({
     mutationFn: signup,
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["authUser"] });
-      // Navigate to onboarding after successful signup
-      navigate('/onboarding', {
-        state: {
-          email: variables.email
-        }
-      });
+      // Check if OTP verification is required
+      if (data.requiresOTPVerification) {
+        // Navigate to OTP verification page
+        navigate('/verify-otp', {
+          state: {
+            email: variables.email
+          }
+        });
+      } else {
+        // Old flow - direct login (for backward compatibility)
+        queryClient.invalidateQueries({ queryKey: ["authUser"] });
+        navigate('/onboarding', {
+          state: {
+            email: variables.email
+          }
+        });
+      }
+      
       if (onSuccess) onSuccess(data, variables);
     },
     onError: (error) => {

@@ -4,6 +4,7 @@ import Button from '../components/signin-signup-comp/Button'
 import InputField from '../components/signin-signup-comp/InputField'
 import { GitHubButton, GoogleButton, FacebookButton } from '../components/signin-signup-comp/OAuthButton'
 import useSignIn from '../hooks/useSignIn'
+import { getGoogleAuthUrl, getGithubAuthUrl } from '../lib/api'
 
 const SignInPage = () => {
   const navigate = useNavigate();
@@ -53,10 +54,44 @@ const SignInPage = () => {
     signInMutation(formData);
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      setServerError(''); // Clear any previous errors
+      const response = await getGoogleAuthUrl();
+      if (response.success) {
+        // Redirect to Google OAuth
+        window.location.href = response.authUrl;
+      }
+    } catch (error) {
+      console.error('Google OAuth error:', error);
+      setServerError('Failed to initiate Google login. Please try again.');
+    }
+  };
+
+  const handleGithubLogin = async () => {
+    try {
+      setServerError(''); // Clear any previous errors
+      const response = await getGithubAuthUrl();
+      if (response.success) {
+        // Redirect to GitHub OAuth
+        window.location.href = response.authUrl;
+      }
+    } catch (error) {
+      console.error('GitHub OAuth error:', error);
+      setServerError('Failed to initiate GitHub login. Please try again.');
+    }
+  };
+
   const handleOAuthLogin = (provider) => {
-    // TODO: Implement OAuth login
-    console.log(`${provider} login`);
-    alert(`${provider} login will be implemented`);
+    if (provider === 'Google') {
+      handleGoogleLogin();
+    } else if (provider === 'GitHub') {
+      handleGithubLogin();
+    } else {
+      // TODO: Implement other OAuth providers (Facebook, etc.)
+      console.log(`${provider} login`);
+      setServerError(`${provider} login will be implemented soon`);
+    }
   };
 
   return (
@@ -168,10 +203,12 @@ const SignInPage = () => {
               </div>
             </div>
 
-            <div className="mt-4 grid grid-cols-3 gap-3">
-              <GitHubButton onClick={() => handleOAuthLogin('GitHub')} />
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              {/* <FacebookButton onClick={() => handleOAuthLogin('Facebook')} /> */}
+              <GitHubButton onClick={() => handleOAuthLogin('GitHub')} /> 
               <GoogleButton onClick={() => handleOAuthLogin('Google')} />
-              <FacebookButton onClick={() => handleOAuthLogin('Facebook')} />
+
+               
             </div>
           </div>
 

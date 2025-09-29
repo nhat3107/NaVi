@@ -1,11 +1,13 @@
 import express from "express";
-import { signUp, signIn, completeOnboarding, logout } from "../controllers/auth.controller.js";
+import { signUp, signIn, completeOnboarding, logout, verifyOTP, resendOTP } from "../controllers/auth.controller.js";
 import { protectRoute } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
 router.post("/signup", signUp);
 router.post("/signin", signIn);
+router.post("/verify-otp", verifyOTP);
+router.post("/resend-otp", resendOTP);
 router.post("/onboarding", protectRoute, completeOnboarding);
 router.post("/logout", logout);
 

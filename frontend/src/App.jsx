@@ -4,6 +4,8 @@ import SignUpPage from './pages/SignUpPage';
 import SignInPage from './pages/SignInPage';
 import OnBoardingPage from './pages/OnBoardingPage';
 import HomePage from './pages/HomePage';
+import AuthCallbackPage from './pages/AuthCallbackPage';
+import OTPVerificationPage from './pages/OTPVerificationPage';
 import useAuthUser from "./hooks/useAuthUser.js";
 
 const App = () => {
@@ -61,6 +63,24 @@ const App = () => {
                 <Navigate to="/signin" />
               )
             }
+          />
+          <Route
+            path="/verify-otp"
+            element={
+              !isAuthenticated ? (
+                <OTPVerificationPage />
+              ) : (
+                <Navigate to={isOnboarded ? "/" : "/onboarding"} />
+              )
+            }
+          />
+          <Route
+            path="/auth/callback/google"
+            element={<AuthCallbackPage />}
+          />
+          <Route
+            path="/auth/callback/github"
+            element={<AuthCallbackPage />}
           />
         </Routes>
       </div>

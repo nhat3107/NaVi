@@ -30,3 +30,25 @@ export const logout = async () => {
   const response = await axiosInstance.post("/auth/logout");
   return response.data;
 };
+
+// OTP Verification functions
+export const verifyOTP = async (otpData) => {
+  const response = await axiosInstance.post("/auth/verify-otp", otpData);
+  return response.data;
+};
+
+export const resendOTP = async (email) => {
+  const response = await axiosInstance.post("/auth/resend-otp", { email });
+  return response.data;
+};
+
+// OAuth functions
+export const getGoogleAuthUrl = async () => {
+  const response = await axiosInstance.get("/oauth/google/url");
+  return response.data;
+};
+
+export const getGithubAuthUrl = async () => {
+  const response = await axiosInstance.get("/oauth/github/url");
+  return response.data;
+};

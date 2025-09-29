@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Button from '../components/signin-signup-comp/Button'
 import InputField from '../components/signin-signup-comp/InputField'
 import useSignUp from '../hooks/useSignUp'
+import { getGoogleAuthUrl } from '../lib/api'
 
 const SignUpPage = () => {
   const navigate = useNavigate();
