@@ -95,6 +95,7 @@ jobs:
         run: |
           mkdir -p ~/app
           cd ~/app
+          cp -r $GITHUB_WORKSPACE/backend/docker-compose.yml .
 
           echo "Cleaning old containers..."
           docker-compose down || true
