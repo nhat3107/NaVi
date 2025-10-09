@@ -34,13 +34,25 @@ jobs:
   test:
     name: Run Backend Unit Tests
     runs-on: ubuntu-latest
-    environment: Build_Push
+    environment: Deployment
     needs: build_and_push
 
     defaults:
       run:
         working-directory: ./backend
-
+    env:
+      DATABASE_URI: ${{ secrets.DATABASE_URI }}
+      FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+      GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+      EMAIL_USER: ${{ secrets.EMAIL_USER }}
+      EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
