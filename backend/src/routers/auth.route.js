@@ -1,5 +1,13 @@
 import express from "express";
-import { signUp, signIn, completeOnboarding, logout, verifyOTP, resendOTP } from "../controllers/auth.controller.js";
+import {
+  signUp,
+  signIn,
+  completeOnboarding,
+  logout,
+  verifyOTP,
+  resendOTP,
+  searchUsers,
+} from "../controllers/auth.controller.js";
 import { protectRoute } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
@@ -15,5 +23,8 @@ router.post("/logout", logout);
 router.get("/me", protectRoute, (req, res) => {
   res.status(200).json({ success: true, user: req.user });
 });
+
+// search users by username
+router.get("/search", protectRoute, searchUsers);
 
 export default router;

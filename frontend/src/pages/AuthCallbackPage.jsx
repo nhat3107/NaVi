@@ -1,24 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { axiosInstance } from '../lib/axios';
+import { processGoogleCallback, processGithubCallback } from '../lib/api';
 
-// OAuth callback API functions
-const processGoogleCallback = async (code, state) => {
-  const response = await axiosInstance.post('/oauth/google/callback', { 
-    code, 
-    state 
-  });
-  return response.data;
-};
-
-const processGithubCallback = async (code, state) => {
-  const response = await axiosInstance.post('/oauth/github/callback', { 
-    code, 
-    state 
-  });
-  return response.data;
-};
 
 const AuthCallbackPage = () => {
   const location = useLocation();

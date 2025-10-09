@@ -1,12 +1,14 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import SignUpPage from './pages/SignUpPage';
-import SignInPage from './pages/SignInPage';
-import OnBoardingPage from './pages/OnBoardingPage';
-import HomePage from './pages/HomePage';
-import AuthCallbackPage from './pages/AuthCallbackPage';
-import OTPVerificationPage from './pages/OTPVerificationPage';
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import SignUpPage from "./pages/SignUpPage";
+import SignInPage from "./pages/SignInPage";
+import OnBoardingPage from "./pages/OnBoardingPage";
+import HomePage from "./pages/HomePage";
+import AuthCallbackPage from "./pages/AuthCallbackPage";
+import OTPVerificationPage from "./pages/OTPVerificationPage";
 import useAuthUser from "./hooks/useAuthUser.js";
+import ChatPage from "./pages/ChatPage.jsx";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   const { isLoading, authUser } = useAuthUser();
@@ -14,17 +16,23 @@ const App = () => {
   const isAuthenticated = Boolean(authUser);
   const isOnboarded = authUser?.isOnBoarded;
 
-  if (isLoading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
 
   return (
     <BrowserRouter>
       <div className="h-screen">
+        <Toaster />
         <Routes>
           <Route
             path="/"
             element={
               isAuthenticated && isOnboarded ? (
-                <HomePage />
+                <ChatPage />
               ) : (
                 <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} />
               )
@@ -74,18 +82,12 @@ const App = () => {
               )
             }
           />
-          <Route
-            path="/auth/callback/google"
-            element={<AuthCallbackPage />}
-          />
-          <Route
-            path="/auth/callback/github"
-            element={<AuthCallbackPage />}
-          />
+          <Route path="/auth/callback/google" element={<AuthCallbackPage />} />
+          <Route path="/auth/callback/github" element={<AuthCallbackPage />} />
         </Routes>
       </div>
     </BrowserRouter>
-  )
-}
+  );
+};
 
 export default App;

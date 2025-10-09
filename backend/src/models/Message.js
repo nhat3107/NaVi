@@ -18,11 +18,6 @@ const MessageSchema = new mongoose.Schema(
       default: "text",
     },
     content: String,
-    aiModeration: {
-      nsfw: { type: Boolean, default: false },
-      violence: { type: Boolean, default: false },
-      confidence: { type: Number, default: 0 },
-    },
   },
   { timestamps: true }
 );
