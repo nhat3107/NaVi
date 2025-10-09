@@ -97,11 +97,11 @@ jobs:
           cd ~/app
 
           echo "Cleaning old containers..."
-          docker compose down || true
+          docker-compose down || true
           docker system prune -af || true
 
           echo "⬇️ Pulling latest backend image..."
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
 
           echo "Starting new backend container..."
-          docker compose up -d
+          docker-compose up -d
