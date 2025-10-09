@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build_and_push:
@@ -95,16 +95,16 @@ jobs:
           export FRONTEND_URL=${{ secrets.FRONTEND_URL }}
           export GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
           export GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-          export GH_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }}
-          export GH_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }}
+          export GH_CLIENT_ID=${{ secrets.GH_CLIENT_ID }}
+          export GH_CLIENT_SECRET=${{ secrets.GH_CLIENT_SECRET }}
           export EMAIL_USER=${{ secrets.EMAIL_USER }}
           export EMAIL_APP_PASSWORD=${{ secrets.EMAIL_APP_PASSWORD }}
           export OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
           export CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}
           export CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
           export CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
-          
+
           docker-compose down || true
           docker system prune -af || true
-          docker pull ${DOCKERHUB_USERNAME}}/${DOCKER_IMAGE_NAME}:latest
+          docker pull ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE_NAME}:latest
           docker-compose up -d
