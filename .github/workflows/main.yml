@@ -86,25 +86,21 @@ jobs:
           mkdir -p ~/app
           cp -r $PWD/backend/docker-compose.yml ~/app/
           cd ~/app
-
-          cat > .env <<EOL
-DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-DOCKER_IMAGE_NAME=${{ secrets.DOCKER_IMAGE_NAME }}
-DATABASE_URI=${{ secrets.DATABASE_URI }}
-FRONTEND_URL=${{ secrets.FRONTEND_URL }}
-GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-GH_CLIENT_ID=${{ secrets.GH_CLIENT_ID }}
-GH_CLIENT_SECRET=${{ secrets.GH_CLIENT_SECRET }}
-EMAIL_USER=${{ secrets.EMAIL_USER }}
-EMAIL_APP_PASSWORD=${{ secrets.EMAIL_APP_PASSWORD }}
-OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}
-CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
-CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
-EOL
-
-
+          > .env
+          echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
+          echo "DOCKER_IMAGE_NAME=${{ secrets.DOCKER_IMAGE_NAME }}" >> .env
+          echo "DATABASE_URI=${{ secrets.DATABASE_URI }}" >> .env
+          echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> .env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+          echo "GH_CLIENT_ID=${{ secrets.GH_CLIENT_ID }}" >> .env
+          echo "GH_CLIENT_SECRET=${{ secrets.GH_CLIENT_SECRET }}" >> .env
+          echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
+          echo "EMAIL_APP_PASSWORD=${{ secrets.EMAIL_APP_PASSWORD }}" >> .env
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+          echo "CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}" >> .env
+          echo "CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}" >> .env
+          echo "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> .env
           docker-compose down || true
           docker system prune -af || true
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
