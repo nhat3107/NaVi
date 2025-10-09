@@ -40,6 +40,7 @@ jobs:
     defaults:
       run:
         working-directory: ./backend
+
     env:
       DATABASE_URI: ${{ secrets.DATABASE_URI }}
       FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
@@ -53,6 +54,7 @@ jobs:
       CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
       CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
       CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -69,11 +71,15 @@ jobs:
         run: npm test
 
   deploy:
-    name: 🚀 Deploy Backend to EC2
+    name: Deploy Backend to EC2
     runs-on: self-hosted
     environment: Deployment
     needs: [build_and_push, test]
+
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Log in to Docker Hub
         run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
@@ -94,15 +100,9 @@ jobs:
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
         run: |
           mkdir -p ~/app
+          cp -r $PWD/backend/docker-compose.yml ~/app/
           cd ~/app
-          cp -r $GITHUB_WORKSPACE/backend/docker-compose.yml .
-
-          echo "Cleaning old containers..."
           docker-compose down || true
           docker system prune -af || true
-
-          echo "⬇️ Pulling latest backend image..."
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
-
-          echo "Starting new backend container..."
           docker-compose up -d
