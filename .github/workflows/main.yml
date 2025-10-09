@@ -106,5 +106,5 @@ jobs:
           
           docker-compose down || true
           docker system prune -af || true
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+          docker pull ${DOCKERHUB_USERNAME}}/${DOCKER_IMAGE_NAME}:latest
           docker-compose up -d
