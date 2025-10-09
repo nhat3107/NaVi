@@ -22,14 +22,21 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+// Health check route
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "NaVi API is running", status: "healthy" });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/oauth", oauthRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
 
-server.listen(PORT, () => {
-  console.log(`Server is running on port http://localhost:${PORT}`);
-  connectDB();
-});
+if (process.env.NODE_ENV !== "test") {
+  server.listen(PORT, () => {
+    console.log(`Server is running on port http://localhost:${PORT}`);
+    connectDB();
+  });
+}
 
 export default server;
