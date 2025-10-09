@@ -9,7 +9,6 @@ jobs:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     environment: Build_Push
-
     defaults:
       run:
         working-directory: ./backend
@@ -36,11 +35,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: Deployment
     needs: build_and_push
-
     defaults:
       run:
         working-directory: ./backend
-
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
@@ -84,26 +81,31 @@ jobs:
         run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-      - name: Pull latest image and restart backend container
+      - name: Prepare app and create .env
         run: |
           mkdir -p ~/app
           cp -r $PWD/backend/docker-compose.yml ~/app/
           cd ~/app
-          export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-          export DOCKER_IMAGE_NAME=${{ secrets.DOCKER_IMAGE_NAME }}
-          export FRONTEND_URL=${{ secrets.FRONTEND_URL }}
-          export GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-          export GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-          export GH_CLIENT_ID=${{ secrets.GH_CLIENT_ID }}
-          export GH_CLIENT_SECRET=${{ secrets.GH_CLIENT_SECRET }}
-          export EMAIL_USER=${{ secrets.EMAIL_USER }}
-          export EMAIL_APP_PASSWORD=${{ secrets.EMAIL_APP_PASSWORD }}
-          export OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-          export CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}
-          export CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
-          export CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
+
+          cat > .env <<EOL
+DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+DOCKER_IMAGE_NAME=${{ secrets.DOCKER_IMAGE_NAME }}
+DATABASE_URI=${{ secrets.DATABASE_URI }}
+FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+GH_CLIENT_ID=${{ secrets.GH_CLIENT_ID }}
+GH_CLIENT_SECRET=${{ secrets.GH_CLIENT_SECRET }}
+EMAIL_USER=${{ secrets.EMAIL_USER }}
+EMAIL_APP_PASSWORD=${{ secrets.EMAIL_APP_PASSWORD }}
+OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}
+CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
+CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
+EOL
+
 
           docker-compose down || true
           docker system prune -af || true
-          docker pull ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE_NAME}:latest
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
           docker-compose up -d
