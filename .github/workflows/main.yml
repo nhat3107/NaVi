@@ -5,10 +5,10 @@ on:
     branches: ["main"]
 
 jobs:
-  build_and_push:
-    name: Build and Push Docker Image
+  build_and_push_backend:
+    name: Build and Push Backend Image
     runs-on: ubuntu-latest
-    environment: Build_Push
+    evironment: Build_Push
     defaults:
       run:
         working-directory: ./backend
@@ -23,18 +23,43 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push Docker image
+      - name: Build and push backend image
         uses: docker/build-push-action@v6
         with:
           context: ./backend
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
 
-  test:
+  build_and_push_frontend:
+    name: Build and Push Frontend Image
+    runs-on: ubuntu-latest
+    evironment: Build_Push
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
+
+  test_backend:
     name: Run Backend Unit Tests
     runs-on: ubuntu-latest
-    environment: Deployment
-    needs: build_and_push
+    needs: build_and_push_backend
+    evironment: Deployment
     defaults:
       run:
         working-directory: ./backend
@@ -68,11 +93,10 @@ jobs:
         run: npm test
 
   deploy:
-    name: Deploy Backend to EC2
+    name: Deploy Full App
     runs-on: self-hosted
-    environment: Deployment
-    needs: [build_and_push, test]
-
+    needs: [build_and_push_backend, build_and_push_frontend, test_backend]
+    evironment: Deployment
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -84,11 +108,10 @@ jobs:
       - name: Prepare app and create .env
         run: |
           mkdir -p ~/app
-          cp -r $PWD/backend/docker-compose.yml ~/app/
+          cp -r $PWD/docker-compose.yml ~/app/
           cd ~/app
           > .env
           echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
-          echo "DOCKER_IMAGE_NAME=${{ secrets.DOCKER_IMAGE_NAME }}" >> .env
           echo "DATABASE_URI=${{ secrets.DATABASE_URI }}" >> .env
           echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> .env
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
@@ -102,7 +125,10 @@ jobs:
           echo "CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}" >> .env
           echo "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> .env
           echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+          echo "VITE_BACKEND_URL=${{ secrets.VITE_BACKEND_URL }}" >> .env
+
           docker compose down || true
           docker system prune -af || true
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
           docker compose up -d

@@ -1,7 +1,9 @@
+version: "3.8"
+
 services:
   backend:
-    image: ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE_NAME}:latest
-    container_name: ${DOCKER_IMAGE_NAME}
+    image: ${DOCKERHUB_USERNAME}/backend:latest
+    container_name: backend
     restart: always
     ports:
       - "5000:5000"
@@ -19,3 +21,23 @@ services:
       - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
       - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
       - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+    networks:
+      - app-network
+
+  frontend:
+    image: ${DOCKERHUB_USERNAME}/frontend:latest
+    container_name: frontend
+    restart: always
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
