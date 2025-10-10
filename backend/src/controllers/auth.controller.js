@@ -109,7 +109,7 @@ export const signIn = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true, // prevent XSS attacks,
       sameSite: "None", // prevent CSRF attacks
-      secure: false,
+      secure: true,
     });
 
     // Trả về user data (không include passwordHash)
@@ -227,7 +227,7 @@ export const verifyOTP = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: "None",
-      secure: false,
+      secure: true,
     });
 
     // Xóa OTP record sau khi tạo user thành công (cleanup)
@@ -319,7 +319,7 @@ export const resendOTP = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
-    res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: false });
+    res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
     res.status(200).json({ success: true, message: "Logout successful" });
   } catch (error) {
     console.log("Error in logout controller", error);
