@@ -52,8 +52,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
-          build-args: |
-            VITE_BACKEND_URL=${{ secrets.VITE_BACKEND_URL }}
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
 
