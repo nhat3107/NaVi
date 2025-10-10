@@ -17,6 +17,9 @@ RUN npm run build
 # Production stage
 FROM nginx:1.25-alpine3.19
 
+# Install wget for health checks
+RUN apk add --no-cache wget
+
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
