@@ -114,13 +114,15 @@ export const signIn = async (req, res) => {
       expiresIn: "7d",
     });
 
+    console.log("Setting JWT cookie, NODE_ENV:", process.env.NODE_ENV);
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true, // prevent XSS attacks,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // prevent CSRF attacks
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax", // Use lax for HTTP, none requires HTTPS
+      secure: false, // Must be false for HTTP
       path: "/",
     });
+    console.log("JWT cookie set successfully");
 
     // Trả về user data (không include passwordHash)
     const userResponse = {
@@ -365,8 +367,8 @@ export const logout = async (req, res) => {
   try {
     res.clearCookie("jwt", {
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      secure: false,
       path: "/",
     });
     res.status(200).json({ success: true, message: "Logout successful" });

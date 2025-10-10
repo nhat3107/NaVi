@@ -20,8 +20,8 @@ export const getGoogleAuthUrl = async (req, res) => {
     res.cookie("oauth_state", state, {
       httpOnly: true,
       maxAge: 10 * 60 * 1000,
-      sameSite: "none",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      secure: false,
       path: "/",
     });
 
@@ -60,15 +60,15 @@ export const handleGoogleCallback = async (req, res) => {
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      secure: false,
       path: "/",
     });
 
     res.clearCookie("oauth_state", {
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      secure: false,
       path: "/",
     });
 
@@ -97,8 +97,8 @@ export const getGithubAuthUrl = async (req, res) => {
     res.cookie("oauth_state", state, {
       httpOnly: true,
       maxAge: 10 * 60 * 1000,
-      sameSite: "none",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      secure: false,
       path: "/",
     });
 
@@ -137,15 +137,15 @@ export const handleGithubCallback = async (req, res) => {
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      secure: false,
       path: "/",
     });
 
     res.clearCookie("oauth_state", {
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      secure: false,
       path: "/",
     });
 
