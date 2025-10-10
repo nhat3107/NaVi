@@ -13,6 +13,9 @@ const io = new Server(server, {
       "http://localhost:80",
       "http://localhost:443",
       "https://localhost:443",
+      // Production domain
+      "https://app.benjaminluong.id.vn",
+      "http://app.benjaminluong.id.vn",
       // EC2 IP patterns
       /^http:\/\/\d+\.\d+\.\d+\.\d+(:\d+)?$/,
       /^https:\/\/\d+\.\d+\.\d+\.\d+(:\d+)?$/,

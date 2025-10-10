@@ -117,7 +117,7 @@ jobs:
           > .env
           echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
           echo "DATABASE_URI=${{ secrets.DATABASE_URI }}" >> .env
-          echo "FRONTEND_URL=http://${{ env.EC2_IP }}:3000" >> .env
+          echo "FRONTEND_URL=https://app.benjaminluong.id.vn" >> .env
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
           echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
           echo "GH_CLIENT_ID=${{ secrets.GH_CLIENT_ID }}" >> .env
