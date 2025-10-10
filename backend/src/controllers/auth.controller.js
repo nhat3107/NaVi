@@ -119,7 +119,7 @@ export const signIn = async (req, res) => {
       httpOnly: true, // prevent XSS attacks,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // prevent CSRF attacks
       secure: process.env.NODE_ENV === "production",
-      domain: process.env.COOKIE_DOMAIN || undefined,
+      path: "/",
     });
 
     // Trả về user data (không include passwordHash)
@@ -367,7 +367,7 @@ export const logout = async (req, res) => {
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       secure: process.env.NODE_ENV === "production",
-      domain: process.env.COOKIE_DOMAIN || undefined,
+      path: "/",
     });
     res.status(200).json({ success: true, message: "Logout successful" });
   } catch (error) {
