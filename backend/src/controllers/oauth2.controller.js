@@ -22,7 +22,8 @@ export const getGoogleAuthUrl = async (req, res) => {
       maxAge: 10 * 60 * 1000,
       sameSite: "none",
       secure: true,
-      domain: process.env.BASE_URL,
+      path: "/",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
     res.status(200).json({ success: true, authUrl, state });
@@ -62,14 +63,16 @@ export const handleGoogleCallback = async (req, res) => {
       httpOnly: true,
       sameSite: "none",
       secure: true,
-      domain: process.env.BASE_URL,
+      path: "/",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
     res.clearCookie("oauth_state", {
       httpOnly: true,
       sameSite: "none",
       secure: true,
-      domain: process.env.BASE_URL,
+      path: "/",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
     const userResponse = { ...user };
@@ -139,14 +142,16 @@ export const handleGithubCallback = async (req, res) => {
       httpOnly: true,
       sameSite: "none",
       secure: true,
-      domain: process.env.BASE_URL,
+      path: "/",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
     res.clearCookie("oauth_state", {
       httpOnly: true,
       sameSite: "none",
       secure: true,
-      domain: process.env.BASE_URL,
+      path: "/",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
     const userResponse = { ...user };

@@ -64,7 +64,7 @@ jobs:
       run:
         working-directory: ./backend
     env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_URI: ${{ secrets.DATABASE_URI }}
       FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
       GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
