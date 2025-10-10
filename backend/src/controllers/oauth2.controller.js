@@ -21,7 +21,8 @@ export const getGoogleAuthUrl = async (req, res) => {
       httpOnly: true,
       maxAge: 10 * 60 * 1000,
       sameSite: "none",
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
     res.status(200).json({ success: true, authUrl, state });
@@ -61,12 +62,14 @@ export const handleGoogleCallback = async (req, res) => {
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       secure: process.env.NODE_ENV === "production",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
     res.clearCookie("oauth_state", {
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       secure: process.env.NODE_ENV === "production",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
     const userResponse = { ...user };
@@ -95,7 +98,8 @@ export const getGithubAuthUrl = async (req, res) => {
       httpOnly: true,
       maxAge: 10 * 60 * 1000,
       sameSite: "none",
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
     res.status(200).json({ success: true, authUrl, state });
@@ -135,12 +139,14 @@ export const handleGithubCallback = async (req, res) => {
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       secure: process.env.NODE_ENV === "production",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
     res.clearCookie("oauth_state", {
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       secure: process.env.NODE_ENV === "production",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
     const userResponse = { ...user };

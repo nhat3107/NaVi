@@ -110,6 +110,7 @@ export const signIn = async (req, res) => {
       httpOnly: true, // prevent XSS attacks,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // prevent CSRF attacks
       secure: process.env.NODE_ENV === "production",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
     // Trả về user data (không include passwordHash)
@@ -228,6 +229,7 @@ export const verifyOTP = async (req, res) => {
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       secure: process.env.NODE_ENV === "production",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
     // Xóa OTP record sau khi tạo user thành công (cleanup)
@@ -323,6 +325,7 @@ export const logout = async (req, res) => {
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       secure: process.env.NODE_ENV === "production",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
     res.status(200).json({ success: true, message: "Logout successful" });
   } catch (error) {
