@@ -6,10 +6,7 @@ export const protectRoute = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-
-    console.log("JWT token found, verifying...");
     req.user = await verifyToken(token);
-    console.log("User verified:", req.user.email);
     next();
   } catch (err) {
     console.log("Auth error:", err.message);
