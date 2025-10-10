@@ -52,6 +52,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
+          build-args: |
+            VITE_BACKEND_URL=${{ secrets.VITE_BACKEND_URL }}
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
 
@@ -128,6 +130,7 @@ jobs:
           echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
           echo "VITE_BACKEND_URL=${{ secrets.VITE_BACKEND_URL }}" >> .env
           echo "BASE_URL=${{ secrets.BASE_URL }}" >> .env
+          echo "COOKIE_DOMAIN=${{ secrets.COOKIE_DOMAIN }}" >> .env
 
           docker compose down || true
           docker system prune -af || true

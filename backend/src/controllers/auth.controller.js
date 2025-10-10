@@ -109,8 +109,9 @@ export const signIn = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true, // prevent XSS attacks,
       sameSite: "none", // prevent CSRF attacks
-      domain: process.env.BASE_URL,
       secure: true,
+      path: "/",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
     // Trả về user data (không include passwordHash)
@@ -228,8 +229,9 @@ export const verifyOTP = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: "none",
-      domain: process.env.BASE_URL,
       secure: true,
+      path: "/",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
     // Xóa OTP record sau khi tạo user thành công (cleanup)
@@ -325,7 +327,8 @@ export const logout = async (req, res) => {
       httpOnly: true,
       sameSite: "none",
       secure: true,
-      domain: process.env.BASE_URL,
+      path: "/",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
     res.status(200).json({ success: true, message: "Logout successful" });
   } catch (error) {
