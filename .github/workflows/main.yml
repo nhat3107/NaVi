@@ -65,7 +65,6 @@ jobs:
         working-directory: ./backend
     env:
       DATABASE_URI: ${{ secrets.DATABASE_URI }}
-      FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
       GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
       GH_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
@@ -76,7 +75,6 @@ jobs:
       CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
       CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
       CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-      COOKIE_DOMAIN: ${{ secrets.COOKIE_DOMAIN }}
 
     steps:
       - name: Checkout code
@@ -102,6 +100,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Get EC2 Public IP
+        run: |
+          EC2_PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+          echo "EC2_IP=$EC2_PUBLIC_IP" >> $GITHUB_ENV
+
       - name: Log in to Docker Hub
         run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
@@ -114,7 +117,8 @@ jobs:
           > .env
           echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
           echo "DATABASE_URI=${{ secrets.DATABASE_URI }}" >> .env
-          echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> .env
+          echo "FRONTEND_URL=http://${{ env.EC2_IP }}" >> .env
+          echo "EC2_PUBLIC_IP=${{ env.EC2_IP }}" >> .env
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
           echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
           echo "GH_CLIENT_ID=${{ secrets.GH_CLIENT_ID }}" >> .env
@@ -126,9 +130,7 @@ jobs:
           echo "CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}" >> .env
           echo "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> .env
           echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
-          echo "VITE_BACKEND_URL=${{ secrets.VITE_BACKEND_URL }}" >> .env
-          echo "COOKIE_DOMAIN=${{ secrets.COOKIE_DOMAIN }}" >> .env
-
+          echo "VITE_BACKEND_URL=http://${{ env.EC2_IP }}" >> .env
           docker compose down || true
           docker system prune -af || true
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest

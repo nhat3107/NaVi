@@ -17,8 +17,26 @@ app.set("trust proxy", 1);
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL, // Frontend URL
+    origin: [
+      process.env.FRONTEND_URL,
+      "http://localhost:3000",
+      "http://localhost:80",
+      "http://localhost:443",
+      "https://localhost:443",
+      // EC2 IP patterns
+      /^http:\/\/\d+\.\d+\.\d+\.\d+(:\d+)?$/,
+      /^https:\/\/\d+\.\d+\.\d+\.\d+(:\d+)?$/,
+    ],
     credentials: true, // Cho phép gửi cookies
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Accept",
+    ],
+    exposedHeaders: ["Set-Cookie"],
+    optionsSuccessStatus: 200,
   })
 );
 app.use(express.json());
@@ -35,7 +53,7 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
 
 if (process.env.NODE_ENV !== "test") {
-  server.listen(PORT, '0.0.0.0',() => {
+  server.listen(PORT, "0.0.0.0", () => {
     console.log(`Server is running on port http://localhost:${PORT}`);
     connectDB();
   });
