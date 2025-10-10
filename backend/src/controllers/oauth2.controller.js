@@ -1,26 +1,26 @@
 import jwt from "jsonwebtoken";
-import { 
-  generateGoogleAuthUrl, 
-  exchangeCodeForToken, 
-  getGoogleUserInfo, 
-  handleGoogleAuth 
+import {
+  generateGoogleAuthUrl,
+  exchangeCodeForToken,
+  getGoogleUserInfo,
+  handleGoogleAuth,
 } from "../services/google-oauth.service.js";
-import { 
-  generateGithubAuthUrl, 
-  exchangeCodeForToken as exchangeGithubCodeForToken, 
-  getGithubUserInfo, 
-  handleGithubAuth 
+import {
+  generateGithubAuthUrl,
+  exchangeCodeForToken as exchangeGithubCodeForToken,
+  getGithubUserInfo,
+  handleGithubAuth,
 } from "../services/github-oauth.service.js";
 
 // Generate Google OAuth URL
 export const getGoogleAuthUrl = async (req, res) => {
   try {
     const { authUrl, state } = generateGoogleAuthUrl();
-    
+
     res.cookie("oauth_state", state, {
       httpOnly: true,
       maxAge: 10 * 60 * 1000,
-      sameSite: "None",
+      sameSite: "none",
       secure: true,
     });
 
@@ -36,7 +36,9 @@ export const handleGoogleCallback = async (req, res) => {
     const { code, state } = req.body;
 
     if (!code) {
-      return res.status(400).json({ message: "Authorization code is required" });
+      return res
+        .status(400)
+        .json({ message: "Authorization code is required" });
     }
 
     const storedState = req.cookies.oauth_state;
@@ -46,23 +48,25 @@ export const handleGoogleCallback = async (req, res) => {
 
     const tokenData = await exchangeCodeForToken(code);
     const googleUser = await getGoogleUserInfo(tokenData.access_token);
-    const { user, isNewUser, needsOnboarding } = await handleGoogleAuth(googleUser);
+    const { user, isNewUser, needsOnboarding } = await handleGoogleAuth(
+      googleUser
+    );
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "7d"
+      expiresIn: "7d",
     });
 
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSite: "None",
+      sameSite: "none",
       secure: true,
     });
 
-    res.clearCookie("oauth_state", { 
-      httpOnly: true, 
-      sameSite: "None", 
-      secure: true 
+    res.clearCookie("oauth_state", {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
     });
 
     const userResponse = { ...user };
@@ -73,11 +77,11 @@ export const handleGoogleCallback = async (req, res) => {
       user: userResponse,
       isNewUser,
       needsOnboarding,
-      message: isNewUser ? "Account created successfully" : "Login successful"
+      message: isNewUser ? "Account created successfully" : "Login successful",
     });
   } catch (error) {
-    res.status(500).json({ 
-      message: error.message || "Google authentication failed" 
+    res.status(500).json({
+      message: error.message || "Google authentication failed",
     });
   }
 };
@@ -86,11 +90,11 @@ export const handleGoogleCallback = async (req, res) => {
 export const getGithubAuthUrl = async (req, res) => {
   try {
     const { authUrl, state } = generateGithubAuthUrl();
-    
+
     res.cookie("oauth_state", state, {
       httpOnly: true,
       maxAge: 10 * 60 * 1000,
-      sameSite: "None",
+      sameSite: "none",
       secure: true,
     });
 
@@ -106,7 +110,9 @@ export const handleGithubCallback = async (req, res) => {
     const { code, state } = req.body;
 
     if (!code) {
-      return res.status(400).json({ message: "Authorization code is required" });
+      return res
+        .status(400)
+        .json({ message: "Authorization code is required" });
     }
 
     const storedState = req.cookies.oauth_state;
@@ -116,22 +122,24 @@ export const handleGithubCallback = async (req, res) => {
 
     const tokenData = await exchangeGithubCodeForToken(code);
     const githubUser = await getGithubUserInfo(tokenData.access_token);
-    const { user, isNewUser, needsOnboarding } = await handleGithubAuth(githubUser);
+    const { user, isNewUser, needsOnboarding } = await handleGithubAuth(
+      githubUser
+    );
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "7d"
+      expiresIn: "7d",
     });
 
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSite: "None",
+      sameSite: "none",
       secure: true,
     });
 
-    res.clearCookie("oauth_state", { 
-      httpOnly: true, 
-      sameSite: "None", 
+    res.clearCookie("oauth_state", {
+      httpOnly: true,
+      sameSite: "none",
       secure: true,
     });
 
@@ -143,12 +151,11 @@ export const handleGithubCallback = async (req, res) => {
       user: userResponse,
       isNewUser,
       needsOnboarding,
-      message: isNewUser ? "Account created successfully" : "Login successful"
+      message: isNewUser ? "Account created successfully" : "Login successful",
     });
   } catch (error) {
-    res.status(500).json({ 
-      message: error.message || "GitHub authentication failed" 
+    res.status(500).json({
+      message: error.message || "GitHub authentication failed",
     });
   }
 };
-

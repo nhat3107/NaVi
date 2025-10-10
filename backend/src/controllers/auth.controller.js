@@ -108,7 +108,7 @@ export const signIn = async (req, res) => {
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true, // prevent XSS attacks,
-      sameSite: "None", // prevent CSRF attacks
+      sameSite: "none", // prevent CSRF attacks
       secure: true,
     });
 
@@ -226,7 +226,7 @@ export const verifyOTP = async (req, res) => {
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSite: "None",
+      sameSite: "none",
       secure: true,
     });
 
@@ -319,7 +319,7 @@ export const resendOTP = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
-    res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+    res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
     res.status(200).json({ success: true, message: "Logout successful" });
   } catch (error) {
     console.log("Error in logout controller", error);
