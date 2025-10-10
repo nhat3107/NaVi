@@ -109,6 +109,7 @@ export const signIn = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true, // prevent XSS attacks,
       sameSite: "none", // prevent CSRF attacks
+      domain: process.env.BASE_URL,
       secure: true,
     });
 
@@ -227,6 +228,7 @@ export const verifyOTP = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: "none",
+      domain: process.env.BASE_URL,
       secure: true,
     });
 
@@ -319,7 +321,12 @@ export const resendOTP = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
-    res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+      domain: process.env.BASE_URL,
+    });
     res.status(200).json({ success: true, message: "Logout successful" });
   } catch (error) {
     console.log("Error in logout controller", error);
