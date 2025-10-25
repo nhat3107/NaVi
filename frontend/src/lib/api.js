@@ -126,7 +126,8 @@ async function signUpload() {
   return response.data;
 }
 
-export async function uploadImage(formData) {
+// Upload media (auto-detects image/video/etc)
+export async function uploadMedia(formData) {
   if (!formData || !formData.file) {
     return { success: false, message: "File is required" };
   }
@@ -144,21 +145,22 @@ export async function uploadImage(formData) {
     uploadFormData.append("signature", signature);
     if (folder) uploadFormData.append("folder", folder);
 
-    // 3️⃣ Gửi request lên Cloudinary
+    // 3️⃣ Gửi request lên Cloudinary (auto detect image/video)
     const uploadResponse = await cloudinaryAxios.post(
-      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`,
       uploadFormData,
       {
         headers: { "Content-Type": "multipart/form-data" },
       }
     );
 
-    const { secure_url, public_id } = uploadResponse.data;
+    const { secure_url, public_id, resource_type } = uploadResponse.data;
 
     return {
       success: true,
       url: secure_url,
       public_id,
+      resource_type, // "image" hoặc "video"
     };
   } catch (error) {
     console.error("Upload error:", error.response?.data || error.message);
@@ -168,3 +170,66 @@ export async function uploadImage(formData) {
     };
   }
 }
+
+// Post API functions
+export const createPost = async (postData) => {
+  const response = await axiosInstance.post("/post/create-post", postData);
+  return response.data;
+};
+
+export const getFeedPosts = async (page = 1, limit = 10) => {
+  const response = await axiosInstance.get("/post/get-feed", {
+    params: { page, limit },
+  });
+  return response.data;
+};
+
+export const getAllPosts = async (page = 1, limit = 10) => {
+  const response = await axiosInstance.get("/post/get-all", {
+    params: { page, limit },
+  });
+  return response.data;
+};
+
+export const getPostById = async (postId) => {
+  const response = await axiosInstance.get(`/post/get-post/${postId}`);
+  return response.data;
+};
+
+export const deletePost = async (postId) => {
+  const response = await axiosInstance.delete(`/post/delete-post/${postId}`);
+  return response.data;
+};
+
+export const toggleLike = async (postId) => {
+  const response = await axiosInstance.post(`/post/toggle-like/${postId}`);
+  return response.data;
+};
+
+export const addComment = async (postId, content) => {
+  const response = await axiosInstance.post(`/post/add-comment/${postId}`, {
+    content,
+  });
+  return response.data;
+};
+
+export const getComments = async (postId, page = 1, limit = 20) => {
+  const response = await axiosInstance.get(`/post/get-comments/${postId}`, {
+    params: { page, limit },
+  });
+  return response.data;
+};
+
+export const deleteComment = async (commentId) => {
+  const response = await axiosInstance.delete(
+    `/post/delete-comment/${commentId}`
+  );
+  return response.data;
+};
+
+export const getUserPosts = async (userId, page = 1, limit = 10) => {
+  const response = await axiosInstance.get(`/post/get-user-posts/${userId}`, {
+    params: { page, limit },
+  });
+  return response.data;
+};

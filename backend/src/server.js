@@ -10,6 +10,7 @@ import authRoutes from "./routers/auth.route.js";
 import oauthRoutes from "./routers/oauth.route.js";
 import chatRoutes from "./routers/chat.route.js";
 import messageRoutes from "./routers/message.route.js";
+import postRoutes from "./routers/post.route.js";
 
 const PORT = process.env.PORT || 5000;
 
@@ -31,6 +32,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/oauth", oauthRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
+app.use("/api/post", postRoutes);
 
 if (process.env.NODE_ENV !== "test") {
   server.listen(PORT, () => {
