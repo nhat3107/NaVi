@@ -20,8 +20,25 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
   const [isDeleting, setIsDeleting] = useState(false);
   const [commentsCount, setCommentsCount] = useState(post.commentsCount || 0);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const isOwnPost = post.authorId?._id === currentUserId;
+
+  // Check if content is too long (more than 3 lines or 300 characters)
+  const isLongContent = post.content && (
+    post.content.length > 300 || 
+    post.content.split('\n').length > 3
+  );
+
+  // Get truncated content
+  const getTruncatedContent = () => {
+    if (!post.content) return '';
+    const lines = post.content.split('\n');
+    if (lines.length > 3) {
+      return lines.slice(0, 3).join('\n');
+    }
+    return post.content.slice(0, 300);
+  };
 
   const handleLike = async () => {
     try {
@@ -133,7 +150,18 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
       {/* Post Content */}
       {post.content && (
         <div className="px-4 pb-3">
-          <p className="text-gray-800 whitespace-pre-wrap">{post.content}</p>
+          <p className="text-gray-800 whitespace-pre-wrap break-words">
+            {isLongContent && !isExpanded ? getTruncatedContent() : post.content}
+            {isLongContent && !isExpanded && '...'}
+          </p>
+          {isLongContent && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-blue-600 hover:text-blue-700 font-medium text-sm mt-1 transition-colors"
+            >
+              {isExpanded ? 'See less' : 'See more'}
+            </button>
+          )}
         </div>
       )}
 

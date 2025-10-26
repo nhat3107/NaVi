@@ -7,10 +7,10 @@ import cloudinary from "../lib/cloudinary.js";
  */
 export const moderatePost = async (req, res, next) => {
   try {
-    const { content, mediaUrls = [] } = req.body;
+    const { content, media = [] } = req.body;
 
     // If no content and no media, skip moderation (validation will happen in controller)
-    if (!content && (!mediaUrls || mediaUrls.length === 0)) {
+    if (!content && (!media || media.length === 0)) {
       return next();
     }
 
@@ -29,9 +29,10 @@ export const moderatePost = async (req, res, next) => {
     }
 
     // Moderate media URLs if exist
-    if (mediaUrls && mediaUrls.length > 0) {
-      for (const mediaUrl of mediaUrls) {
-        const imageModeration = await openai.moderations.create({
+    if (media && media.length > 0) {
+      for (const mediaItem of media) {
+        const mediaUrl = mediaItem.url;
+        const mediaModeration = await openai.moderations.create({
           model: "omni-moderation-latest",
           input: [
             {
@@ -41,9 +42,9 @@ export const moderatePost = async (req, res, next) => {
           ],
         });
         moderationResults.push({
-          type: "image",
+          type: mediaItem.type || "image",
           url: mediaUrl,
-          result: imageModeration.results[0],
+          result: mediaModeration.results[0],
         });
       }
     }

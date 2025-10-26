@@ -7,6 +7,7 @@ const CreatePost = ({ onPostCreated, userAvatar, userName }) => {
   const [mediaFiles, setMediaFiles] = useState([]);
   const [mediaPreviews, setMediaPreviews] = useState([]);
   const fileInputRef = useRef(null);
+  const textareaRef = useRef(null);
   const { handleCreatePost, isCreating, isUploading } = useCreatePost();
 
   const handleMediaSelect = (e) => {
@@ -50,6 +51,11 @@ const CreatePost = ({ onPostCreated, userAvatar, userName }) => {
       mediaPreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
       setMediaPreviews([]);
       
+      // Reset textarea height
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+      }
+      
       // Notify parent
       if (onPostCreated) {
         onPostCreated(newPost);
@@ -79,13 +85,18 @@ const CreatePost = ({ onPostCreated, userAvatar, userName }) => {
           </div>
           
           <div className="flex-1">
-            <input
-              type="text"
+            <textarea
+              ref={textareaRef}
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="What's on your mind?"
-              className="w-full px-4 py-2.5 border-none rounded-full bg-gray-100 focus:outline-none focus:bg-gray-200 text-gray-800 placeholder-gray-500 transition-colors"
+              className="w-full px-4 py-2.5 border-none rounded-2xl bg-gray-100 focus:outline-none focus:bg-gray-200 text-gray-800 placeholder-gray-500 transition-colors resize-none min-h-[42px] max-h-[200px] overflow-y-auto"
               disabled={isCreating}
+              rows={1}
+              onInput={(e) => {
+                e.target.style.height = 'auto';
+                e.target.style.height = e.target.scrollHeight + 'px';
+              }}
             />
           </div>
         </div>
