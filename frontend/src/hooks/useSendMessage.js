@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useChatStore } from "../stores/useChatStore";
 import { sendMessage as sendMessageAPI } from "../lib/api";
-import { uploadImage } from "../lib/api";
+import { uploadMedia } from "../lib/api";
 
 export const useSendMessage = (chatId, options = {}) => {
   const addMessage = useChatStore((s) => s.addMessage);
@@ -14,7 +14,7 @@ export const useSendMessage = (chatId, options = {}) => {
       if (payload instanceof File) {
         // upload to Cloudinary and send as image
         const formData = { file: payload };
-        const res = await uploadImage(formData);
+        const res = await uploadMedia(formData);
         if (!res?.success || !res?.url) {
           throw new Error(res?.message || "Upload failed");
         }

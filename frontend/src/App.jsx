@@ -32,7 +32,8 @@ const App = () => {
             path="/"
             element={
               isAuthenticated && isOnboarded ? (
-                <ChatPage />
+                // <ChatPage />
+                <HomePage />
               ) : (
                 <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} />
               )
@@ -84,6 +85,7 @@ const App = () => {
           />
           <Route path="/auth/callback/google" element={<AuthCallbackPage />} />
           <Route path="/auth/callback/github" element={<AuthCallbackPage />} />
+          <Route path="/chat" element={<ChatPage />} />
         </Routes>
       </div>
     </BrowserRouter>
