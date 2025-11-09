@@ -3,12 +3,14 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../stores/useAuthStore";
 import toast from "react-hot-toast";
 import NaviIcon from "../assets/navi_icon_white.svg";
+import SearchPanel from "./SearchPanel";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuthStore();
   const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [showSearchPanel, setShowSearchPanel] = useState(false);
   const moreMenuRef = useRef(null);
 
   // Close menu when clicking outside
@@ -36,7 +38,7 @@ const Navbar = () => {
     {
       name: "Home",
       path: "/",
-      active: location.pathname === "/",
+      active: location.pathname === "/" && !showSearchPanel,
       icon: (
         <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -45,8 +47,9 @@ const Navbar = () => {
     },
     {
       name: "Search",
-      path: "/search",
-      active: location.pathname === "/search",
+      path: null, // Not a navigation item, triggers panel
+      active: showSearchPanel,
+      onClick: () => setShowSearchPanel(true),
       icon: (
         <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -86,6 +89,7 @@ const Navbar = () => {
   ];
 
   return (
+    <>
     <nav className="fixed left-0 top-0 h-screen w-20 bg-white border-r border-gray-200 flex flex-col items-center py-4 z-50">
       {/* Logo */}
       <div 
@@ -97,10 +101,10 @@ const Navbar = () => {
 
       {/* Navigation Items */}
       <div className="flex-1 flex flex-col space-y-3 w-full px-2">
-        {navItems.map((item) => (
+        {navItems.map((item, index) => (
           <button
-            key={item.path}
-            onClick={() => navigate(item.path)}
+            key={item.path || item.name}
+            onClick={() => item.onClick ? item.onClick() : navigate(item.path)}
             className={`relative flex items-center justify-center p-4 rounded-xl transition-colors ${
               item.active
                 ? "text-gray-900 bg-gray-100"
@@ -120,7 +124,11 @@ const Navbar = () => {
 
       {/* User Profile */}
       <div className="w-full px-2 mb-3">
-        <div className="flex flex-col items-center">
+        <button 
+          onClick={() => navigate(`/profile/${user?._id}`)}
+          className="flex flex-col items-center w-full hover:opacity-80 transition-opacity"
+          title="View Profile"
+        >
           <div className="relative">
             {user?.avatarUrl ? (
               <div className="relative">
@@ -140,7 +148,7 @@ const Navbar = () => {
               </div>
             )}
           </div>
-        </div>
+        </button>
       </div>
 
       {/* More Button */}
@@ -214,6 +222,10 @@ const Navbar = () => {
         )}
       </div>
     </nav>
+
+    {/* Search Panel */}
+    {showSearchPanel && <SearchPanel onClose={() => setShowSearchPanel(false)} />}
+  </>
   );
 };
 

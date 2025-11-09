@@ -233,3 +233,48 @@ export const getUserPosts = async (userId, page = 1, limit = 10) => {
   });
   return response.data;
 };
+
+// User Profile API functions
+export const getProfile = async () => {
+  const response = await axiosInstance.get("/users/profile");
+  return response.data;
+};
+
+export const updateProfile = async (profileData) => {
+  const response = await axiosInstance.patch("/users/profile", profileData);
+  return response.data;
+};
+
+export const getUserProfile = async (userId) => {
+  const response = await axiosInstance.get(`/users/${userId}`);
+  return response.data;
+};
+
+export const deleteAvatar = async () => {
+  const response = await axiosInstance.delete("/users/avatar");
+  return response.data;
+};
+
+export const followUser = async (userId) => {
+  const response = await axiosInstance.post(`/users/follow/${userId}`);
+  return response.data;
+};
+
+export const unfollowUser = async (userId) => {
+  const response = await axiosInstance.post(`/users/unfollow/${userId}`);
+  return response.data;
+};
+
+export const getFollowers = async (userId, limit = 20) => {
+  const response = await axiosInstance.get(`/users/${userId}/followers`, {
+    params: { limit },
+  });
+  return response.data;
+};
+
+export const getFollowing = async (userId, limit = 20) => {
+  const response = await axiosInstance.get(`/users/${userId}/following`, {
+    params: { limit },
+  });
+  return response.data;
+};
