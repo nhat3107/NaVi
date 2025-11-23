@@ -7,7 +7,6 @@ import { createPersonalChat } from "../../lib/api";
 import { useChats } from "../../hooks/useChats";
 import { useQueryClient } from "@tanstack/react-query";
 
-// Load real chats
 const formatChatItem = (chat, currentUserId) => {
   const isGroup = chat.isGroup;
   const name = isGroup
@@ -29,6 +28,8 @@ const formatChatItem = (chat, currentUserId) => {
     avatar,
     lastMessage: chat.lastMessage || "",
     type: isGroup ? "group" : "personal",
+    participants: chat.participants || [],
+    isGroup: chat.isGroup || false,
   };
 };
 
@@ -40,35 +41,28 @@ export default function Sidebar({
   selectedChatId,
 }) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeTab, setActiveTab] = useState("personal"); // 'personal' | 'group' | 'users'
+  const [activeTab, setActiveTab] = useState("personal");
   const { user } = useAuthStore();
   const { data: chats = [] } = useChats();
   const queryClient = useQueryClient();
 
-  // User search functionality
   const {
     users: searchResults,
     loading: searchLoading,
     error: searchError,
   } = useSearchUsers(searchTerm);
 
-  // Auth store for logout
   const { logout } = useAuthStore();
 
-  // Handle creating new chat with user
   const handleCreateChat = async (user) => {
     try {
-      // Expect backend to create or return existing personal chat
       const res = await createPersonalChat([user._id]);
       const chat = res.chat;
       if (chat) {
         toast.success("Chat is ready");
-        // Refresh chats list
         await queryClient.invalidateQueries({ queryKey: ["chats"] });
-        // Optimistically prepend new chat to cache for instant UI
         queryClient.setQueryData(["chats"], (old) => {
           const prev = Array.isArray(old) ? old : old?.chats || [];
-          // minimal chat shape
           const optimistic = {
             _id: chat._id,
             isGroup: false,
@@ -78,11 +72,9 @@ export default function Sidebar({
               { _id: user._id === user?._id ? user._id : user?._id },
             ],
           };
-          // Avoid duplicates if already present
           if (prev.find((c) => c._id === chat._id)) return prev;
           return [optimistic, ...prev];
         });
-        // Map to sidebar chat item shape if needed
         onSelectChat?.({
           id: chat._id,
           _id: chat._id,
@@ -90,34 +82,48 @@ export default function Sidebar({
           avatar: user.avatarUrl,
           lastMessage: chat.lastMessage || "",
           type: "personal",
+          participants: chat.participants || [{ _id: user._id }, { _id: user?._id }],
+          isGroup: false,
         });
       } else {
         toast.error("Could not create chat");
       }
     } catch (e) {
-      console.error(e);
       toast.error(e.response?.data?.message || "Failed to create chat");
     }
   };
 
-  // Users displayed (only real results)
   const displayUsers = useMemo(() => {
     if (searchLoading || searchError) return [];
     return searchResults || [];
   }, [searchResults, searchLoading, searchError]);
 
   const personalData = useMemo(() => {
-    const items = (chats || [])
-      .filter((c) => !c.isGroup)
-      .map((c) => formatChatItem(c, user?._id));
-    return items;
+    const filtered = (chats || []).filter((c) => !c.isGroup);
+    const sorted = filtered.sort((a, b) => {
+      const timeA = a?.lastMessageAt 
+        ? new Date(a.lastMessageAt).getTime() 
+        : (a?.createdAt ? new Date(a.createdAt).getTime() : 0);
+      const timeB = b?.lastMessageAt 
+        ? new Date(b.lastMessageAt).getTime() 
+        : (b?.createdAt ? new Date(b.createdAt).getTime() : 0);
+      return timeB - timeA;
+    });
+    return sorted.map((c) => formatChatItem(c, user?._id));
   }, [chats, user?._id]);
 
   const groupData = useMemo(() => {
-    const items = (chats || [])
-      .filter((c) => c.isGroup)
-      .map((c) => formatChatItem(c, user?._id));
-    return items;
+    const filtered = (chats || []).filter((c) => c.isGroup);
+    const sorted = filtered.sort((a, b) => {
+      const timeA = a?.lastMessageAt 
+        ? new Date(a.lastMessageAt).getTime() 
+        : (a?.createdAt ? new Date(a.createdAt).getTime() : 0);
+      const timeB = b?.lastMessageAt 
+        ? new Date(b.lastMessageAt).getTime() 
+        : (b?.createdAt ? new Date(b.createdAt).getTime() : 0);
+      return timeB - timeA;
+    });
+    return sorted.map((c) => formatChatItem(c, user?._id));
   }, [chats, user?._id]);
 
   const filteredPersonal = useMemo(() => {
@@ -149,7 +155,7 @@ export default function Sidebar({
         <div className="flex items-center gap-2">
           <button
             onClick={onOpenCreateGroup}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 active:bg-blue-800 transition-colors"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700 active:bg-indigo-800 transition-colors"
             title="Create a new group"
           >
             <span>＋</span>
@@ -169,7 +175,7 @@ export default function Sidebar({
         <button
           className={`px-3 py-2 text-sm font-medium -mb-px border-b-2 transition-colors ${
             activeTab === "personal"
-              ? "border-blue-600 text-blue-600"
+              ? "border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400"
               : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           }`}
           onClick={() => setActiveTab("personal")}
@@ -179,7 +185,7 @@ export default function Sidebar({
         <button
           className={`px-3 py-2 text-sm font-medium -mb-px border-b-2 transition-colors ${
             activeTab === "group"
-              ? "border-blue-600 text-blue-600"
+              ? "border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400"
               : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           }`}
           onClick={() => setActiveTab("group")}
@@ -189,7 +195,7 @@ export default function Sidebar({
         <button
           className={`px-3 py-2 text-sm font-medium -mb-px border-b-2 transition-colors ${
             activeTab === "users"
-              ? "border-blue-600 text-blue-600"
+              ? "border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400"
               : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           }`}
           onClick={() => setActiveTab("users")}
@@ -212,7 +218,6 @@ export default function Sidebar({
 
       <div className="space-y-2 overflow-y-auto">
         {activeTab === "users" ? (
-          // User search results
           <>
             {searchLoading && (
               <div className="text-sm text-gray-500 dark:text-gray-400 py-6 text-center">
@@ -255,7 +260,7 @@ export default function Sidebar({
                       e.stopPropagation();
                       handleCreateChat(user);
                     }}
-                    className="opacity-100 md:opacity-0 md:group-hover:opacity-100 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 md:transform md:scale-90 md:group-hover:scale-100"
+                    className="opacity-100 md:opacity-0 md:group-hover:opacity-100 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 md:transform md:scale-90 md:group-hover:scale-100"
                     title="Create a chat"
                   >
                     <span className="inline-flex items-center gap-1">
@@ -292,7 +297,6 @@ export default function Sidebar({
             )}
           </>
         ) : (
-          // Chat results (personal/group)
           <>
             {(activeTab === "personal" ? filteredPersonal : filteredGroups).map(
               (chat) => (
@@ -301,7 +305,7 @@ export default function Sidebar({
                   onClick={() => onSelectChat?.(chat)}
                   className={`flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors ${
                     selectedChatId === chat.id
-                      ? "bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700"
+                      ? "bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700"
                       : ""
                   }`}
                 >
@@ -331,7 +335,6 @@ export default function Sidebar({
         )}
       </div>
 
-      {/* Logout Button */}
       <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
         <button
           onClick={logout}

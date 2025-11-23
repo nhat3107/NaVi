@@ -1,5 +1,5 @@
 
-FROM node:20-alpine AS builder
+FROM node:20-alpine3.19 AS builder
 
 WORKDIR /app
 
@@ -11,11 +11,15 @@ COPY . .
 
 
 
-FROM node:20-alpine AS runner
+FROM node:20-alpine3.19 AS runner
 WORKDIR /app
 
 COPY --from=builder /app ./
 
+ENV NODE_ENV=production
+
 EXPOSE 5000
+
+HEALTHCHECK CMD wget -qO- http://localhost:5000/ || exit 1
 
 CMD ["npm", "start"]

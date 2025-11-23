@@ -28,11 +28,11 @@ export default function CreateGroupModal({ open, onClose, onSubmit }) {
     e.preventDefault();
     const name = groupName.trim();
     if (!name) {
-      setError("Vui lòng nhập tên nhóm");
+      setError("Please enter a group name");
       return;
     }
     if (selectedUserIds.length < 2) {
-      setError("Vui lòng chọn ít nhất 2 thành viên");
+      setError("Please select at least 2 members");
       return;
     }
     setError("");
@@ -90,26 +90,26 @@ export default function CreateGroupModal({ open, onClose, onSubmit }) {
               id="create-group-title"
               className="text-lg font-semibold text-gray-800 dark:text-gray-100"
             >
-              Tạo nhóm mới
+              Create new group
             </h3>
             <button
               type="button"
               onClick={onClose}
               className="text-gray-500 dark:text-gray-300 text-xl"
-              aria-label="Đóng"
+              aria-label="Close"
             >
               ✕
             </button>
           </div>
 
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Tên nhóm
+            Group name
           </label>
           <input
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
-            placeholder="Nhập tên nhóm"
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter group name"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
           />
           {error && (
             <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -119,13 +119,13 @@ export default function CreateGroupModal({ open, onClose, onSubmit }) {
 
           <div className="mt-4">
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-              Chọn thành viên
+              Select members
             </p>
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Tìm người dùng theo tên..."
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+              placeholder="Search users by name..."
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 mb-2"
             />
             <button
               type="button"
@@ -139,9 +139,9 @@ export default function CreateGroupModal({ open, onClose, onSubmit }) {
                   setLoading(false);
                 }
               }}
-              className="mb-3 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700"
+              className="mb-3 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700"
             >
-              Tìm kiếm
+              Search
             </button>
             {selectedUsers.length > 0 && (
               <div className="mb-3 flex flex-wrap gap-2">
@@ -173,7 +173,7 @@ export default function CreateGroupModal({ open, onClose, onSubmit }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-auto pr-1">
               {loading && (
                 <div className="col-span-2 text-sm text-gray-500 dark:text-gray-400">
-                  Đang tìm kiếm...
+                  Searching...
                 </div>
               )}
               {results.map((user) => {
@@ -185,7 +185,7 @@ export default function CreateGroupModal({ open, onClose, onSubmit }) {
                     onClick={() => toggleSelect(user._id)}
                     className={`flex items-center gap-3 p-2 rounded-lg border text-left transition-colors ${
                       selected
-                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30"
+                        ? "border-indigo-500 dark:border-indigo-400 bg-indigo-50 dark:bg-indigo-900/30"
                         : "border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                     }`}
                   >
@@ -213,7 +213,7 @@ export default function CreateGroupModal({ open, onClose, onSubmit }) {
               })}
             </div>
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              Yêu cầu chọn ít nhất 2 người.
+              Please select at least 2 members.
             </p>
           </div>
 
@@ -223,18 +223,18 @@ export default function CreateGroupModal({ open, onClose, onSubmit }) {
               onClick={onClose}
               className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              Hủy
+              Cancel
             </button>
             <button
               type="submit"
               disabled={!isValid}
               className={`px-4 py-2 rounded-lg text-white ${
                 isValid
-                  ? "bg-blue-600 hover:bg-blue-700 active:bg-blue-800"
-                  : "bg-blue-300 cursor-not-allowed"
+                  ? "bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800"
+                  : "bg-indigo-300 dark:bg-indigo-800 cursor-not-allowed"
               }`}
             >
-              Tạo nhóm
+              Create group
             </button>
           </div>
         </form>

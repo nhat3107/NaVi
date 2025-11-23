@@ -171,6 +171,15 @@ export async function uploadMedia(formData) {
   }
 }
 
+// Video call API functions
+export const getVideoSDKToken = async () => {
+  const response = await axiosInstance.get("/videocall/token");
+  return response.data;
+};
+
+export const createVideoCall = async (participantIds) => {
+  const response = await axiosInstance.post("/videocall/create", {
+    participantIds,
 // Post API functions
 export const createPost = async (postData) => {
   const response = await axiosInstance.post("/post/create-post", postData);
@@ -184,6 +193,23 @@ export const getFeedPosts = async (page = 1, limit = 10) => {
   return response.data;
 };
 
+export const joinVideoCall = async (roomId) => {
+  const response = await axiosInstance.post(`/videocall/join/${roomId}`);
+  return response.data;
+};
+
+export const leaveVideoCall = async (roomId) => {
+  const response = await axiosInstance.post(`/videocall/leave/${roomId}`);
+  return response.data;
+};
+
+export const endVideoCall = async (roomId) => {
+  const response = await axiosInstance.post(`/videocall/end/${roomId}`);
+  return response.data;
+};
+
+export const getVideoCallHistory = async () => {
+  const response = await axiosInstance.get("/videocall/history");
 export const getAllPosts = async (page = 1, limit = 10) => {
   const response = await axiosInstance.get("/post/get-all", {
     params: { page, limit },

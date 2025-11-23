@@ -1,0 +1,136 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build_and_push_backend:
+    name: Build and Push Backend Image
+    runs-on: ubuntu-latest
+    environment: Build_Push
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+
+  build_and_push_frontend:
+    name: Build and Push Frontend Image
+    runs-on: ubuntu-latest
+    environment: Build_Push
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
+
+  test_backend:
+    name: Run Backend Unit Tests
+    runs-on: ubuntu-latest
+    needs: build_and_push_backend
+    environment: Deployment
+    defaults:
+      run:
+        working-directory: ./backend
+    env:
+      DATABASE_URI: ${{ secrets.DATABASE_URI }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      GH_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
+      GH_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET }}
+      EMAIL_USER: ${{ secrets.EMAIL_USER }}
+      EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  deploy:
+    name: Deploy Full App
+    runs-on: self-hosted
+    needs: [build_and_push_backend, build_and_push_frontend, test_backend]
+    environment: Deployment
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get EC2 Public IP
+        run: |
+          EC2_PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+          echo "EC2_IP=$EC2_PUBLIC_IP" >> $GITHUB_ENV
+
+      - name: Log in to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Prepare app and create .env
+        run: |
+          mkdir -p ~/app
+          cp -r $PWD/docker-compose.yml ~/app/
+          cd ~/app
+          > .env
+          echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
+          echo "DATABASE_URI=${{ secrets.DATABASE_URI }}" >> .env
+          echo "FRONTEND_URL=https://app.benjaminluong.id.vn" >> .env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+          echo "GH_CLIENT_ID=${{ secrets.GH_CLIENT_ID }}" >> .env
+          echo "GH_CLIENT_SECRET=${{ secrets.GH_CLIENT_SECRET }}" >> .env
+          echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
+          echo "EMAIL_APP_PASSWORD=${{ secrets.EMAIL_APP_PASSWORD }}" >> .env
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+          echo "CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}" >> .env
+          echo "CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}" >> .env
+          echo "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> .env
+          echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+          docker compose down || true
+          docker system prune -af || true
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
+          docker compose up -d

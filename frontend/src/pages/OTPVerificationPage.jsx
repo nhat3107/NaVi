@@ -115,8 +115,8 @@ const OTPVerificationPage = () => {
           {/* Header */}
           <div className="text-center mb-8">
             {/* Email icon */}
-            <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="mx-auto w-16 h-16 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mb-4">
+              <svg className="w-8 h-8 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
@@ -183,7 +183,7 @@ const OTPVerificationPage = () => {
                   text-sm font-medium transition-colors
                   ${countdown > 0 || isResending
                     ? 'text-gray-400 cursor-not-allowed' 
-                    : 'text-blue-600 hover:text-blue-700 cursor-pointer'
+                    : 'text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 cursor-pointer'
                   }
                 `}
               >

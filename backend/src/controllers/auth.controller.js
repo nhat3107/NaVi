@@ -36,6 +36,9 @@ export const signUp = async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedOTP = await bcryptjs.hash(otp, 10);
 
+    console.log("Creating OTP for email:", email);
+    console.log("Generated OTP:", otp); // Log OTP (chỉ cho debug, xóa trong production)
+
     // Lưu OTP và password tạm thời (10 phút expire) - CHƯA tạo user
     await TempOTP.create({
       email,
@@ -46,8 +49,14 @@ export const signUp = async (req, res) => {
       verified: false,
     });
 
+    console.log(
+      "OTP saved to database, expires at:",
+      new Date(Date.now() + 10 * 60 * 1000)
+    );
+
     // Gửi OTP qua email
     await sendOTPEmail(email, otp);
+    console.log("OTP email sent successfully");
 
     // Trả về response yêu cầu verify OTP (User chưa được tạo)
     res.status(201).json({
@@ -105,12 +114,15 @@ export const signIn = async (req, res) => {
       expiresIn: "7d",
     });
 
+    console.log("Setting JWT cookie, NODE_ENV:", process.env.NODE_ENV);
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true, // prevent XSS attacks,
-      sameSite: "None", // prevent CSRF attacks
-      secure: true,
+      sameSite: "lax", // Use lax for HTTP, none requires HTTPS
+      secure: false, // Must be false for HTTP
+      path: "/",
     });
+    console.log("JWT cookie set successfully");
 
     // Trả về user data (không include passwordHash)
     const userResponse = {
@@ -160,6 +172,9 @@ export const verifyOTP = async (req, res) => {
   const { email, otp } = req.body;
 
   try {
+    console.log("Verifying OTP for email:", email);
+    console.log("OTP received:", otp);
+
     // Tìm OTP record
     const otpRecord = await TempOTP.findOne({
       email,
@@ -168,10 +183,22 @@ export const verifyOTP = async (req, res) => {
     });
 
     if (!otpRecord) {
+      console.log("No OTP record found for email:", email);
+      // Kiểm tra có OTP record nào không (bất kể verified/expired)
+      const anyOTP = await TempOTP.findOne({ email });
+      if (anyOTP) {
+        console.log("Found OTP but:", {
+          verified: anyOTP.verified,
+          expired: anyOTP.expiresAt < new Date(),
+          expiresAt: anyOTP.expiresAt,
+        });
+      }
       return res.status(400).json({
         message: "Invalid or expired OTP",
       });
     }
+
+    console.log("OTP record found, attempts:", otpRecord.attempts);
 
     // Kiểm tra số lần thử
     if (otpRecord.attempts >= 5) {
@@ -182,17 +209,22 @@ export const verifyOTP = async (req, res) => {
 
     // Verify OTP
     const isOTPValid = await bcryptjs.compare(otp, otpRecord.otp);
+    console.log("OTP validation result:", isOTPValid);
 
     if (!isOTPValid) {
       // Tăng attempts count
       otpRecord.attempts += 1;
       await otpRecord.save();
 
+      console.log("Invalid OTP, attempts now:", otpRecord.attempts);
+
       return res.status(400).json({
         message: "Invalid OTP",
         attemptsLeft: 5 - otpRecord.attempts,
       });
     }
+
+    console.log("OTP verified successfully!");
 
     // OTP đúng - Bây giờ mới tạo user
     otpRecord.verified = true;
@@ -226,8 +258,9 @@ export const verifyOTP = async (req, res) => {
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSite: "None",
-      secure: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
+      domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
     // Xóa OTP record sau khi tạo user thành công (cleanup)
@@ -265,20 +298,27 @@ export const resendOTP = async (req, res) => {
   const { email } = req.body;
 
   try {
-    // Kiểm tra xem có pending OTP record không
-    const existingOTP = await TempOTP.findOne({ email, verified: false });
-    if (!existingOTP) {
-      return res.status(400).json({
-        message:
-          "No pending verification found for this email. Please sign up again.",
-      });
-    }
+    console.log("Resending OTP for email:", email);
 
     // Kiểm tra user đã được tạo chưa (nếu có nghĩa là đã verified rồi)
     const user = await getUserByEmail(email);
     if (user) {
       return res.status(400).json({
-        message: "Email already verified and account created",
+        message:
+          "Email already verified and account created. Please sign in instead.",
+      });
+    }
+
+    // Kiểm tra xem có pending OTP record không (bỏ qua expired)
+    let existingOTP = await TempOTP.findOne({ email, verified: false });
+
+    // Nếu OTP đã expire hoặc không tồn tại, tạo mới
+    if (!existingOTP || existingOTP.expiresAt < new Date()) {
+      console.log("OTP expired or not found, creating new signup session");
+      return res.status(400).json({
+        message:
+          "Your previous verification session has expired. Please sign up again to receive a new OTP.",
+        requiresNewSignup: true,
       });
     }
 
@@ -297,6 +337,8 @@ export const resendOTP = async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedOTP = await bcryptjs.hash(otp, 10);
 
+    console.log("Resending new OTP:", otp); // Debug log
+
     // Update existing OTP record với OTP mới
     existingOTP.otp = hashedOTP;
     existingOTP.attempts = 0; // Reset attempts
@@ -304,12 +346,16 @@ export const resendOTP = async (req, res) => {
     existingOTP.createdAt = new Date(); // Update created time for rate limiting
     await existingOTP.save();
 
+    console.log("OTP updated, new expiry:", existingOTP.expiresAt);
+
     // Gửi OTP qua email
     await sendOTPEmail(email, otp);
 
+    console.log("New OTP email sent successfully");
+
     res.status(200).json({
       success: true,
-      message: "New OTP sent to your email",
+      message: "New OTP sent to your email. Please check your inbox.",
     });
   } catch (error) {
     console.log("Error in resendOTP controller", error);
@@ -319,7 +365,12 @@ export const resendOTP = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
-    res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false,
+      path: "/",
+    });
     res.status(200).json({ success: true, message: "Logout successful" });
   } catch (error) {
     console.log("Error in logout controller", error);

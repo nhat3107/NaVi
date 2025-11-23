@@ -77,26 +77,35 @@ export default function ChatPage() {
                 setSelectedChat({
                   id: chat._id,
                   _id: chat._id,
-                  name: chat.groupName,
-                  avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(
-                    chat.groupName || chat._id
-                  )}`,
-                  lastMessage: chat.lastMessage || "",
-                  type: "group",
-                });
-                toast.success("Tạo nhóm thành công");
-              } else {
-                toast.error("Không thể tạo nhóm");
-              }
-            } catch (err) {
-              console.error("Create group error", err);
-              toast.error(err?.response?.data?.message || "Lỗi tạo nhóm");
-            } finally {
-              setCreateGroupOpen(false);
+                  isGroup: true,
+                  groupName: chat.groupName,
+                  participants: chat.participants || [],
+                };
+                return [optimistic, ...prev];
+              });
+              setSelectedChat({
+                id: chat._id,
+                _id: chat._id,
+                name: chat.groupName,
+                avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(
+                  chat.groupName || chat._id
+                )}`,
+                lastMessage: chat.lastMessage || "",
+                type: "group",
+                participants: chat.participants || [], // Include participants
+                isGroup: true,
+              });
+              toast.success("Group created successfully");
+            } else {
+              toast.error("Failed to create group");
             }
-          }}
-        />
-      </div>
+          } catch (err) {
+            toast.error(err?.response?.data?.message || "Error creating group");
+          } finally {
+            setCreateGroupOpen(false);
+          }
+        }}
+      />
     </div>
   );
 }

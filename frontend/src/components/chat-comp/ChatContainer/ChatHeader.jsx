@@ -1,11 +1,50 @@
+import useVideoCall from "../../../hooks/useVideoCall";
+import toast from "react-hot-toast";
+
 export default function ChatHeader({
   toggleSidebar,
   selectedChat,
   onCloseChat,
 }) {
+  const { initiateCall } = useVideoCall();
+
+  const handleVideoCall = async () => {
+    if (!selectedChat) {
+      toast.error("Please select a chat");
+      return;
+    }
+
+    if (!selectedChat.participants || !Array.isArray(selectedChat.participants)) {
+      toast.error("Invalid chat data");
+      return;
+    }
+
+    if (!selectedChat._id) {
+      toast.error("Invalid chat ID");
+      return;
+    }
+
+    try {
+      const participantIds = selectedChat.participants
+        .map((p) => {
+          if (typeof p === "string") return p;
+          return p._id || p.id || null;
+        })
+        .filter((id) => id && id !== "");
+
+      if (participantIds.length === 0) {
+        toast.error("No participants found");
+        return;
+      }
+
+      await initiateCall(participantIds, selectedChat._id);
+    } catch (error) {
+      toast.error(error.message || "Failed to start video call");
+    }
+  };
+
   return (
     <div className="flex items-center justify-between p-4 border-b bg-white dark:bg-gray-800">
-      {/* Toggle sidebar button on mobile */}
       <button
         onClick={toggleSidebar}
         className="md:hidden text-gray-600 dark:text-gray-300 text-2xl"
@@ -27,29 +66,12 @@ export default function ChatHeader({
       </div>
       <div className="flex gap-2">
         <button
-          className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          title="Call"
+          onClick={handleVideoCall}
+          className="p-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors group"
+          title="Start video call"
         >
           <svg
-            className="w-5 h-5 text-gray-600 dark:text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-            />
-          </svg>
-        </button>
-        <button
-          className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          title="Call video"
-        >
-          <svg
-            className="w-5 h-5 text-gray-600 dark:text-gray-400"
+            className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

@@ -19,7 +19,7 @@ export const generateGithubAuthUrl = () => {
   const scope = "read:user user:email";
 
   const params = new URLSearchParams({
-    client_id: process.env.GITHUB_CLIENT_ID,
+    client_id: process.env.GH_CLIENT_ID,
     redirect_uri: `${process.env.FRONTEND_URL}/auth/callback/github`,
     response_type: "code",
     scope: scope,
