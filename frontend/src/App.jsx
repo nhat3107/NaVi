@@ -6,6 +6,8 @@ import OnBoardingPage from "./pages/OnBoardingPage";
 import HomePage from "./pages/HomePage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
 import OTPVerificationPage from "./pages/OTPVerificationPage";
+import ProfilePage from "./pages/ProfilePage";
+import ProfileEditPage from "./pages/ProfileEditPage";
 import useAuthUser from "./hooks/useAuthUser.js";
 import ChatPage from "./pages/ChatPage.jsx";
 import { Toaster } from "react-hot-toast";
@@ -85,7 +87,36 @@ const App = () => {
           />
           <Route path="/auth/callback/google" element={<AuthCallbackPage />} />
           <Route path="/auth/callback/github" element={<AuthCallbackPage />} />
-          <Route path="/chat" element={<ChatPage />} />
+          <Route
+            path="/chat"
+            element={
+              isAuthenticated && isOnboarded ? (
+                <ChatPage />
+              ) : (
+                <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} />
+              )
+            }
+          />
+          <Route
+            path="/profile/:userId"
+            element={
+              isAuthenticated && isOnboarded ? (
+                <ProfilePage />
+              ) : (
+                <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} />
+              )
+            }
+          />
+          <Route
+            path="/profile/edit"
+            element={
+              isAuthenticated && isOnboarded ? (
+                <ProfileEditPage />
+              ) : (
+                <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} />
+              )
+            }
+          />
         </Routes>
       </div>
     </BrowserRouter>
