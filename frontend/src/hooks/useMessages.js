@@ -1,12 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { getMessages } from "../lib/api";
-import { useChatStore } from "../stores/useChatStore";
-import { socket as socketClient } from "../lib/socket.client";
+import { getSocket } from "../lib/socket.client";
+import { useAuthStore } from "../stores/useAuthStore";
 
 export const useMessages = (chatId) => {
-  const { setMessages, addMessage } = useChatStore();
   const queryClient = useQueryClient();
+  const { user: authUser } = useAuthStore();
 
   const {
     data,
@@ -14,6 +14,7 @@ export const useMessages = (chatId) => {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
+    error,
     refetch,
   } = useInfiniteQuery({
     queryKey: ["messages", chatId],
@@ -24,77 +25,87 @@ export const useMessages = (chatId) => {
         chatId,
         pageParam ? { before: pageParam, limit: 30 } : { limit: 30 }
       );
-      const list = Array.isArray(res) ? res : res?.messages || [];
-      return list;
+      const messages = res?.messages || [];
+      return messages;
     },
     getNextPageParam: (lastPage) => {
-      if (!Array.isArray(lastPage) || lastPage.length < 30) return undefined;
-      const oldest = lastPage[0];
-      return oldest?.createdAt || oldest?.timestamp;
+      // If page has less than 30 messages, no more pages
+      if (!lastPage || lastPage.length < 30) return undefined;
+      // Return the oldest message's timestamp for next pagination
+      // Since messages are returned oldest-to-newest, lastPage[0] is the oldest
+      return lastPage[0]?.createdAt;
     },
-    onSuccess: (resp) => {
-      const flat = (resp?.pages || []).flat();
-      setMessages(flat);
-    },
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
   });
 
+  const appendMessage = useCallback(
+    (msg) => {
+      queryClient.setQueryData(["messages", chatId], (old) => {
+        if (!old || !Array.isArray(old.pages)) return old;
+        
+        const pages = [...old.pages];
+        const lastIdx = pages.length > 0 ? pages.length - 1 : 0;
+        const lastPage = Array.isArray(pages[lastIdx]) ? pages[lastIdx] : [];
+
+        const id = msg?._id;
+        if (id && lastPage.some((m) => m._id === id)) return old;
+
+        pages[lastIdx] = [...lastPage, msg];
+        return { ...old, pages };
+      });
+    },
+    [chatId, queryClient]
+  );
+
   useEffect(() => {
-    const socket = socketClient;
+    const socket = getSocket();
     if (!socket || !chatId) return;
 
     socket.emit("join-room", chatId);
 
-    socket.on("new-message", (msg) => {
+    const handleNewMessage = (msg) => {
       const incomingChatId =
         msg?.chatId?._id || msg?.chatId || msg?.message?.chatId;
-      if (!incomingChatId || String(incomingChatId) !== String(chatId)) return;
+      if (String(incomingChatId) !== String(chatId)) return;
 
-      const incomingId = msg?._id || msg?.message?._id;
-      let alreadyExists = false;
-      queryClient.setQueryData(["messages", chatId], (old) => {
-        // Support infinite query shape { pages: [...], pageParams: [...] }
-        if (old && Array.isArray(old.pages) && Array.isArray(old.pageParams)) {
-          const pages = [...old.pages];
-          const lastIdx = pages.length > 0 ? pages.length - 1 : 0;
-          const lastPage = Array.isArray(pages[lastIdx]) ? pages[lastIdx] : [];
-          if (
-            incomingId &&
-            lastPage.some((m) => (m?._id || m?.message?._id) === incomingId)
-          ) {
-            alreadyExists = true;
-            return old;
-          }
-          const updatedLast = [...lastPage, msg];
-          pages[lastIdx] = updatedLast;
-          return { ...old, pages };
-        }
-        // Fallback: append to flat list
-        const list = Array.isArray(old) ? old : old?.messages || [];
-        if (
-          incomingId &&
-          list.some((m) => (m?._id || m?.message?._id) === incomingId)
-        ) {
-          alreadyExists = true;
-          return old;
-        }
-        return [...list, msg];
-      });
-
-      if (!alreadyExists) {
-        addMessage(msg);
+      const msgSenderId = msg?.senderId?._id || msg?.senderId;
+      const currentUserId = authUser?._id;
+      if (msgSenderId && currentUserId && String(msgSenderId) === String(currentUserId)) {
+        return;
       }
-    });
+
+      const current = queryClient.getQueryData(["messages", chatId]);
+      const alreadyExists = current?.pages?.some((page) =>
+        page.some((m) => m._id === msg._id)
+      );
+      if (alreadyExists) return;
+
+      appendMessage(msg);
+    };
+
+    socket.on("new-message", handleNewMessage);
 
     return () => {
       socket.emit("leave-room", chatId);
-      socket.off("new-message");
+      socket.off("new-message", handleNewMessage);
     };
-  }, [chatId]);
+  }, [chatId, queryClient, appendMessage, authUser?._id]);
 
-  const flat = (data?.pages || []).flat();
+  // IMPORTANT: Reverse pages before flattening to maintain correct chronological order
+  // pages[0] contains newest messages, pages[1] contains older messages, etc.
+  // Each page internally is ordered oldest-to-newest
+  // So we reverse the pages array: [...pages].reverse().flat()
+  // This gives us: [oldest page] -> [newer page] -> [newest page]
+  // Result: [very old messages...old messages...recent messages...newest messages]
+  const flatMessages = [...(data?.pages || [])].reverse().flat();
+
   return {
-    messages: flat,
+    messages: flatMessages,
     isLoading,
+    error,
     refetch,
     fetchNextPage,
     hasNextPage,

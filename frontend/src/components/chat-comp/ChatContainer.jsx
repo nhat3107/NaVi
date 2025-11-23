@@ -2,7 +2,6 @@ import ChatHeader from "./ChatContainer/ChatHeader";
 import MessageList from "./ChatContainer/MessageList";
 import MessageInput from "./ChatContainer/MessageInput";
 import EmptyChatState from "./EmptyChatState";
-import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useMessages } from "../../hooks/useMessages";
 import { useSendMessage } from "../../hooks/useSendMessage";
@@ -12,9 +11,16 @@ export default function ChatContainer({
   selectedChat,
   onCloseChat,
 }) {
-  const chatId = selectedChat?._id || selectedChat?.id;
-  const { messages, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useMessages(chatId);
+  const chatId = selectedChat?._id;
+  const {
+    messages,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    error,
+  } = useMessages(chatId);
+
   const { sendMessage } = useSendMessage(chatId, {
     onError: (msg) => {
       toast.error(msg);
@@ -23,7 +29,6 @@ export default function ChatContainer({
 
   const handleSend = (payload) => {
     if (!chatId) return;
-    // payload: string (text) or File (image)
     sendMessage(payload);
   };
 
@@ -38,6 +43,9 @@ export default function ChatContainer({
           />
           <MessageList
             messages={messages}
+            isLoading={isLoading}
+            hasError={!!error}
+            chatId={chatId}
             onLoadMore={
               hasNextPage && !isFetchingNextPage
                 ? () => fetchNextPage()

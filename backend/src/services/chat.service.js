@@ -3,7 +3,7 @@ import Chat from "../models/Chat.js";
 export const getChatService = async (userId) => {
   return await Chat.find({ participants: userId })
     .populate("participants", "username avatarUrl")
-    .sort({ updatedAt: -1 });
+    .sort({ lastMessageAt: -1, createdAt: -1 });
 };
 
 export const getChatByIdService = async (id) => {

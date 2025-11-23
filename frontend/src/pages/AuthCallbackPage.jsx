@@ -122,7 +122,7 @@ const AuthCallbackPage = () => {
             <div className="space-y-3">
               <button
                 onClick={() => navigate('/signin')}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
               >
                 Try Again
               </button>

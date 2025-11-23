@@ -1,20 +1,116 @@
 import VideoCall from "../models/VideoCall.js";
+import axios from "axios";
+import jwt from "jsonwebtoken";
 
-// Tạo cuộc gọi mới
-export const createCall = async (initiatorId, participantIds) => {
-  const roomId = `room_${Date.now()}_${Math.random()
-    .toString(36)
-    .substring(2, 8)}`;
+const VIDEOSDK_API_ENDPOINT = "https://api.videosdk.live";
+const VIDEOSDK_API_KEY = process.env.VIDEOSDK_API_KEY;
+const VIDEOSDK_SECRET_KEY = process.env.VIDEOSDK_SECRET_KEY;
+
+// Generate VideoSDK token
+export const generateVideoSDKToken = async () => {
+  try {
+    // Check if environment variables are set
+    if (!VIDEOSDK_API_KEY || !VIDEOSDK_SECRET_KEY) {
+      console.error("❌ VideoSDK API keys are not configured!");
+      console.error(
+        "Please add VIDEOSDK_API_KEY and VIDEOSDK_SECRET_KEY to your .env file"
+      );
+      console.error("Get your keys from: https://app.videosdk.live/");
+      throw new Error(
+        "VideoSDK API keys are not configured. Please check your .env file."
+      );
+    }
+
+    // VideoSDK requires JWT token with API key and secret
+    const options = {
+      expiresIn: "24h",
+      algorithm: "HS256",
+    };
+
+    const payload = {
+      apikey: VIDEOSDK_API_KEY,
+      permissions: ["allow_join", "allow_mod"], // permissions for token
+    };
+
+    const token = jwt.sign(payload, VIDEOSDK_SECRET_KEY, options);
+    return token;
+  } catch (error) {
+    console.error("Error generating VideoSDK token:", error);
+    throw error;
+  }
+};
+
+// Create new VideoSDK room
+export const createVideoSDKRoom = async (token) => {
+  try {
+    const url = `${VIDEOSDK_API_ENDPOINT}/v2/rooms`;
+    const options = {
+      method: "POST",
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const response = await axios.post(url, {}, options);
+    const data = response.data;
+
+    if (data.roomId) {
+      return { roomId: data.roomId, err: null };
+    } else {
+      return { roomId: null, err: data.error };
+    }
+  } catch (error) {
+    console.error("Error creating VideoSDK room:", error);
+    return { roomId: null, err: error.message };
+  }
+};
+
+// Validate VideoSDK room
+export const validateVideoSDKRoom = async (roomId, token) => {
+  try {
+    const url = `${VIDEOSDK_API_ENDPOINT}/v2/rooms/validate/${roomId}`;
+    const options = {
+      method: "GET",
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const response = await axios.get(url, options);
+
+    if (response.status === 400) {
+      const data = response.data;
+      return { roomId: null, err: data };
+    }
+
+    const data = response.data;
+
+    if (data.roomId) {
+      return { roomId: data.roomId, err: null };
+    } else {
+      return { roomId: null, err: data.error };
+    }
+  } catch (error) {
+    console.error("Error validating VideoSDK room:", error);
+    return { roomId: null, err: error.message };
+  }
+};
+
+// Create new call in database
+export const createCall = async (initiatorId, participantIds, roomId) => {
   const call = new VideoCall({
     roomId,
-    participants: [initiatorId, ...participantIds],
+    participants: [initiatorId], // Only add initiator, others will join later
+    invitedParticipants: participantIds, // Save list of invited participants
     startedAt: new Date(),
     status: "active",
   });
   return await call.save();
 };
 
-// Thêm người tham gia
+// Add participant
 export const joinCall = async (roomId, userId) => {
   const call = await VideoCall.findOneAndUpdate(
     { roomId, status: "active" },
@@ -25,7 +121,7 @@ export const joinCall = async (roomId, userId) => {
   return call;
 };
 
-// Rời khỏi cuộc gọi
+// Leave call
 export const leaveCall = async (roomId, userId) => {
   const call = await VideoCall.findOneAndUpdate(
     { roomId },
@@ -35,7 +131,7 @@ export const leaveCall = async (roomId, userId) => {
   return call;
 };
 
-// Kết thúc cuộc gọi
+// End call
 export const endCall = async (roomId) => {
   return await VideoCall.findOneAndUpdate(
     { roomId },
@@ -44,9 +140,15 @@ export const endCall = async (roomId) => {
   );
 };
 
-// Lấy lịch sử cuộc gọi của người dùng
+// Get call by roomId
+export const getCallByRoomId = async (roomId) => {
+  return await VideoCall.findOne({ roomId });
+};
+
+// Get user's call history
 export const getUserCallHistory = async (userId) => {
   return await VideoCall.find({ participants: userId })
-    .populate("participants", "username avatarUrl")
-    .sort({ createdAt: -1 });
+    .populate("participants", "username avatarUrl fullName")
+    .sort({ createdAt: -1 })
+    .limit(20);
 };

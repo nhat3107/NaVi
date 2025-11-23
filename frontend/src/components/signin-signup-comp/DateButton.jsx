@@ -104,7 +104,7 @@ const validateBirthDate = (day, month, year) => {
   if (!isMinimumAge(day, month, year)) {
     return {
       success: false,
-      message: 'You must be at least 13 years old to register'
+      message: 'You must be at least 13 years old'
     };
   }
   
@@ -228,10 +228,10 @@ const DateButton = ({
       {/* Dropdown trigger */}
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all duration-200 bg-white cursor-pointer flex items-center justify-between ${className}`}
+        className={`w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all duration-200 bg-white dark:bg-gray-800 cursor-pointer flex items-center justify-between ${className}`}
         {...props}
       >
-        <span className={`${!selectedOption ? 'text-gray-400' : 'text-gray-700'}`}>
+        <span className={`${!selectedOption ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-200'}`}>
           {displayValue}
         </span>
         
@@ -248,13 +248,13 @@ const DateButton = ({
 
       {/* Custom dropdown list */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto">
           {filteredOptions.map((option, index) => (
             <div
               key={index}
               onClick={() => handleSelect(option.value)}
-              className={`px-4 py-2 cursor-pointer transition-colors hover:bg-gray-50 text-gray-700 ${
-                option.value == value ? 'bg-blue-50 text-blue-600' : ''
+              className={`px-4 py-2 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 ${
+                option.value == value ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' : ''
               } ${index === 0 ? 'rounded-t-lg' : ''} ${index === filteredOptions.length - 1 ? 'rounded-b-lg' : ''}`}
             >
               {option.label}

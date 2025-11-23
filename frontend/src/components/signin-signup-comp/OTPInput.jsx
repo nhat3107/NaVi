@@ -150,7 +150,7 @@ const OTPInput = ({ length = 6, onComplete, disabled = false }) => {
             w-12 h-12 text-center text-lg font-semibold border-2 rounded-lg
             ${disabled 
               ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed' 
-              : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:outline-none hover:border-gray-400'
+              : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:border-indigo-500 dark:focus:border-indigo-400 focus:outline-none hover:border-gray-400 dark:hover:border-gray-500'
             }
             transition-colors duration-200
           `}

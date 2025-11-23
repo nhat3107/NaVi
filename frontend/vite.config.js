@@ -25,7 +25,7 @@ export default defineConfig({
   },
   server: {
     host: "0.0.0.0",
-    port: 3000,
+    port: 5173,
     proxy: {
       "/api": {
         target: process.env.VITE_BACKEND_URL || "http://localhost:5000",
@@ -41,6 +41,6 @@ export default defineConfig({
   },
   preview: {
     host: "0.0.0.0",
-    port: 3000,
+    port: 5173,
   },
 });

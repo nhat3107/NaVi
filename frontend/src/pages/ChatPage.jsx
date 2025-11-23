@@ -1,6 +1,7 @@
 import ChatContainer from "../components/chat-comp/ChatContainer";
 import Sidebar from "../components/chat-comp/ChatSidebar";
 import CreateGroupModal from "../components/chat-comp/CreateGroupModal";
+import Navbar from "../components/Navbar";
 import { useState } from "react";
 // Removed framer-motion because we keep a single Sidebar instance to preserve state
 import { useQueryClient } from "@tanstack/react-query";
@@ -19,7 +20,9 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-900 relative overflow-hidden">
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+      <Navbar />
+      <div className="flex flex-1 ml-20 relative overflow-hidden">
       {(() => {
         const mobileVisible = !selectedChat || sidebarOpen;
         const mobileClasses = mobileVisible
@@ -48,22 +51,31 @@ export default function ChatPage() {
         />
       </div>
 
-      <CreateGroupModal
-        open={createGroupOpen}
-        onClose={() => setCreateGroupOpen(false)}
-        onSubmit={async ({ name, memberIds }) => {
-          // Create group on backend and select it
-          try {
-            const { createGroupChat } = await import("../lib/api");
-            const res = await createGroupChat(name, memberIds);
-            const chat = res.chat;
-            if (chat) {
-              await queryClient.invalidateQueries({ queryKey: ["chats"] });
-              // Optimistically add group chat to cache for instant UI
-              queryClient.setQueryData(["chats"], (old) => {
-                const prev = Array.isArray(old) ? old : old?.chats || [];
-                if (prev.find((c) => c._id === chat._id)) return prev;
-                const optimistic = {
+        <CreateGroupModal
+          open={createGroupOpen}
+          onClose={() => setCreateGroupOpen(false)}
+          onSubmit={async ({ name, memberIds }) => {
+            // Create group on backend and select it
+            try {
+              const { createGroupChat } = await import("../lib/api");
+              const res = await createGroupChat(name, memberIds);
+              const chat = res.chat;
+              if (chat) {
+                await queryClient.invalidateQueries({ queryKey: ["chats"] });
+                // Optimistically add group chat to cache for instant UI
+                queryClient.setQueryData(["chats"], (old) => {
+                  const prev = Array.isArray(old) ? old : old?.chats || [];
+                  if (prev.find((c) => c._id === chat._id)) return prev;
+                  const optimistic = {
+                    _id: chat._id,
+                    isGroup: true,
+                    groupName: chat.groupName,
+                    participants: chat.participants || [],
+                  };
+                  return [optimistic, ...prev];
+                });
+                setSelectedChat({
+                  id: chat._id,
                   _id: chat._id,
                   isGroup: true,
                   groupName: chat.groupName,
@@ -80,14 +92,15 @@ export default function ChatPage() {
                 )}`,
                 lastMessage: chat.lastMessage || "",
                 type: "group",
+                participants: chat.participants || [], // Include participants
+                isGroup: true,
               });
-              toast.success("Tạo nhóm thành công");
+              toast.success("Group created successfully");
             } else {
-              toast.error("Không thể tạo nhóm");
+              toast.error("Failed to create group");
             }
           } catch (err) {
-            console.error("Create group error", err);
-            toast.error(err?.response?.data?.message || "Lỗi tạo nhóm");
+            toast.error(err?.response?.data?.message || "Error creating group");
           } finally {
             setCreateGroupOpen(false);
           }
