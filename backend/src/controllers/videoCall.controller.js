@@ -17,11 +17,28 @@ export const createRoom = async (req, res) => {
     const { participantIds } = req.body;
     const initiatorId = req.user._id;
 
+    // Validate participantIds
+    if (!participantIds || !Array.isArray(participantIds)) {
+      return res.status(400).json({ 
+        message: "participantIds must be an array" 
+      });
+    }
+
     const token = await videoCallService.generateVideoSDKToken();
     const roomData = await videoCallService.createVideoSDKRoom(token);
 
     if (roomData.err) {
-      return res.status(400).json({ message: roomData.err });
+      console.error("VideoSDK room creation error:", roomData.err);
+      return res.status(400).json({ 
+        message: roomData.err || "Failed to create video room" 
+      });
+    }
+
+    if (!roomData.roomId) {
+      console.error("VideoSDK room creation failed: no roomId returned");
+      return res.status(500).json({ 
+        message: "Failed to create video room: no room ID returned" 
+      });
     }
 
     // Save to database
@@ -39,7 +56,11 @@ export const createRoom = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in createRoom:", error);
-    res.status(500).json({ message: error.message });
+    // Don't expose internal error details in production
+    const errorMessage = process.env.NODE_ENV === "production" 
+      ? "Failed to create video call. Please try again later."
+      : error.message;
+    res.status(500).json({ message: errorMessage });
   }
 };
 

@@ -109,9 +109,20 @@ const OTPVerificationPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
-      <div className="max-w-md w-full">
-        <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 px-4 py-8">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Large gradient orbs */}
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-indigo-400/30 dark:bg-indigo-600/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400/30 dark:bg-purple-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-300/20 dark:bg-indigo-700/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] dark:bg-[linear-gradient(to_right,#80808020_1px,transparent_1px),linear-gradient(to_bottom,#80808020_1px,transparent_1px)]"></div>
+      </div>
+
+      <div className="max-w-md w-full relative z-10">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-white/20 dark:border-gray-700/50">
           {/* Header */}
           <div className="text-center mb-8">
             {/* Email icon */}
@@ -121,37 +132,37 @@ const OTPVerificationPage = () => {
               </svg>
             </div>
             
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Verify Your Email
             </h1>
-            <p className="text-gray-500 text-sm mb-2">
+            <p className="text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
               We've sent a 6-digit verification code to
             </p>
-            <p className="text-gray-900 font-medium text-sm mb-6">
+            <p className="text-gray-900 dark:text-gray-100 font-semibold text-sm mb-6">
               {maskEmail(email)}
             </p>
-            <div className="border-t border-gray-200"></div>
+            <div className="border-t border-gray-300 dark:border-gray-600"></div>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Success message */}
             {successMessage && (
-              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm text-center">
+              <div className="bg-green-50 dark:bg-green-900/30 border-2 border-green-300 dark:border-green-600 text-green-800 dark:text-green-200 px-4 py-3 rounded-lg text-sm text-center font-medium">
                 {successMessage}
               </div>
             )}
 
             {/* Error message */}
             {serverError && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm text-center">
+              <div className="bg-red-50 dark:bg-red-900/30 border-2 border-red-300 dark:border-red-600 text-red-800 dark:text-red-200 px-4 py-3 rounded-lg text-sm text-center font-medium">
                 {serverError}
               </div>
             )}
 
             {/* OTP Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3 text-center">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 text-center">
                 Enter verification code
               </label>
               <OTPInput 
@@ -172,7 +183,7 @@ const OTPVerificationPage = () => {
 
             {/* Resend OTP */}
             <div className="text-center">
-              <p className="text-gray-500 text-sm mb-2">
+              <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
                 Didn't receive the code?
               </p>
               <button
@@ -193,7 +204,7 @@ const OTPVerificationPage = () => {
             </div>
 
             {/* Help text */}
-            <div className="text-center text-xs text-gray-400 space-y-1">
+            <div className="text-center text-xs text-gray-500 dark:text-gray-400 space-y-1">
               <p>Check your spam folder if you don't see the email</p>
               <p>The code expires in 10 minutes</p>
             </div>
@@ -203,7 +214,7 @@ const OTPVerificationPage = () => {
           <div className="mt-6 text-center">
             <button 
               type="button" 
-              className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+              className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
               onClick={() => navigate('/signup')}
             >
               ← Back to Sign Up

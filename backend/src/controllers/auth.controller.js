@@ -75,6 +75,22 @@ export const signUp = async (req, res) => {
 export const signIn = async (req, res) => {
   const { email, password } = req.body; // Lấy dữ liệu từ frontend
   try {
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    // Basic password validation (minimum length)
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
     // Kiểm tra xem user đã tồn tại chưa
     const user = await getUserByEmail(email);
     if (!user) {
@@ -103,6 +119,13 @@ export const signIn = async (req, res) => {
       return res.status(400).json({ message: "Invalid password or email" });
     }
 
+    // Check if user has password (OAuth users might not have password)
+    if (!user.passwordHash) {
+      return res.status(400).json({ 
+        message: "This account was created with OAuth. Please use OAuth to sign in." 
+      });
+    }
+
     // User tồn tại, verify password
     const isPasswordValid = await bcryptjs.compare(password, user.passwordHash);
     if (!isPasswordValid) {
@@ -114,15 +137,15 @@ export const signIn = async (req, res) => {
       expiresIn: "7d",
     });
 
-    console.log("Setting JWT cookie, NODE_ENV:", process.env.NODE_ENV);
+    // Set JWT cookie with appropriate settings based on environment
+    const isProduction = process.env.NODE_ENV === "production";
     res.cookie("jwt", token, {
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true, // prevent XSS attacks,
-      sameSite: "lax", // Use lax for HTTP, none requires HTTPS
-      secure: false, // Must be false for HTTP
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      httpOnly: true, // Prevent XSS attacks
+      sameSite: isProduction ? "none" : "lax", // Use none for HTTPS in production
+      secure: isProduction, // Must be true for HTTPS in production
       path: "/",
     });
-    console.log("JWT cookie set successfully");
 
     // Trả về user data (không include passwordHash)
     const userResponse = {
@@ -142,7 +165,7 @@ export const signIn = async (req, res) => {
 
     res.status(200).json({ success: true, user: userResponse });
   } catch (error) {
-    console.log("Error in signIn controller", error);
+    console.error("Error in signIn controller:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

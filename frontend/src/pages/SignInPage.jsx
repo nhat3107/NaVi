@@ -50,7 +50,19 @@ const SignInPage = () => {
       return;
     }
 
-    console.log('Login attempt:', formData);
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setServerError('Please enter a valid email address!');
+      return;
+    }
+
+    // Basic password validation
+    if (formData.password.length < 6) {
+      setServerError('Password must be at least 6 characters!');
+      return;
+    }
+
     signInMutation(formData);
   };
 
@@ -63,7 +75,6 @@ const SignInPage = () => {
         window.location.href = response.authUrl;
       }
     } catch (error) {
-      console.error('Google OAuth error:', error);
       setServerError('Failed to initiate Google login. Please try again.');
     }
   };
@@ -77,7 +88,6 @@ const SignInPage = () => {
         window.location.href = response.authUrl;
       }
     } catch (error) {
-      console.error('GitHub OAuth error:', error);
       setServerError('Failed to initiate GitHub login. Please try again.');
     }
   };
@@ -89,7 +99,6 @@ const SignInPage = () => {
       handleGithubLogin();
     } else {
       // TODO: Implement other OAuth providers (Facebook, etc.)
-      console.log(`${provider} login`);
       setServerError(`${provider} login will be implemented soon`);
     }
   };

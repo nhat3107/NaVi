@@ -50,6 +50,7 @@ export const createVideoSDKRoom = async (token) => {
         Authorization: token,
         "Content-Type": "application/json",
       },
+      timeout: 10000, // 10 seconds timeout
     };
 
     const response = await axios.post(url, {}, options);
@@ -58,11 +59,28 @@ export const createVideoSDKRoom = async (token) => {
     if (data.roomId) {
       return { roomId: data.roomId, err: null };
     } else {
-      return { roomId: null, err: data.error };
+      const errorMsg = data.error || data.message || "Unknown error from VideoSDK";
+      console.error("VideoSDK API error response:", data);
+      return { roomId: null, err: errorMsg };
     }
   } catch (error) {
     console.error("Error creating VideoSDK room:", error);
-    return { roomId: null, err: error.message };
+    
+    // Provide more detailed error information
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      const errorMsg = error.response.data?.error || 
+                      error.response.data?.message || 
+                      `VideoSDK API error: ${error.response.status} ${error.response.statusText}`;
+      return { roomId: null, err: errorMsg };
+    } else if (error.request) {
+      // The request was made but no response was received
+      return { roomId: null, err: "No response from VideoSDK API. Please check your network connection." };
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      return { roomId: null, err: error.message || "Failed to create video room" };
+    }
   }
 };
 

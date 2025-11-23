@@ -23,6 +23,8 @@ services:
       - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
       - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - VIDEOSDK_API_KEY=${VIDEOSDK_API_KEY}
+      - VIDEOSDK_SECRET_KEY=${VIDEOSDK_SECRET_KEY}
     networks:
       - app-network
     healthcheck:
