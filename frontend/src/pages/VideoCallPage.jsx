@@ -117,7 +117,12 @@ const VideoCallPage = () => {
 
         // Nếu vẫn chưa có token, lấy token mới
         if (!currentToken && isMounted.current) {
-          currentToken = await getVideoSDKToken();
+          try {
+            currentToken = await getVideoSDKToken();
+          } catch (error) {
+            console.error("Error getting VideoSDK token:", error);
+            throw new Error("Could not get video call token. Please check your connection.");
+          }
         }
 
         if (!currentToken) {
@@ -161,7 +166,8 @@ const VideoCallPage = () => {
         }
       } catch (error) {
         if (isMounted.current) {
-          toast.error("Failed to initialize call: " + error.message);
+          const errorMessage = error?.response?.data?.message || error?.message || "Failed to initialize call";
+          toast.error(errorMessage);
           // Đóng cửa sổ nếu là popup, nếu không thì navigate
           setTimeout(() => {
             if (window.opener && !window.opener.closed) {
@@ -214,29 +220,15 @@ const VideoCallPage = () => {
         }
       };
 
-      // Listen for all users busy
-      const handleAllBusy = (data) => {
-        if (isMounted.current && isReady) {
-          // If already joined, ignore busy (too late)
-          return;
-        }
-        if (isMounted.current) {
-          setCallEndReason("busy");
-          setIsReady(false);
-        }
-      };
-
       socket.on("connect", handleSocketReconnect);
       socket.on("call:timeout", handleCallTimeout);
       socket.on("call:declined", handleCallDeclined);
-      socket.on("call:all-busy", handleAllBusy);
 
       // Cleanup listener on unmount
       const cleanupReconnect = () => {
         socket.off("connect", handleSocketReconnect);
         socket.off("call:timeout", handleCallTimeout);
         socket.off("call:declined", handleCallDeclined);
-        socket.off("call:all-busy", handleAllBusy);
       };
 
       // Store cleanup function

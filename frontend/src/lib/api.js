@@ -175,7 +175,7 @@ export const uploadImage = uploadMedia;
 // Video call API functions
 export const getVideoSDKToken = async () => {
   const response = await axiosInstance.get("/videocall/token");
-  return response.data;
+  return response.data.token || response.data;
 };
 
 export const createVideoCall = async (participantIds) => {

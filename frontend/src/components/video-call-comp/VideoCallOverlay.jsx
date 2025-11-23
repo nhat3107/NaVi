@@ -43,6 +43,16 @@ export const VideoCallOverlay = () => {
 
       const response = await joinVideoRoom(incomingCall.roomId);
 
+      if (!response || !response.success) {
+        toast.error(response?.message || "Failed to join call");
+        return;
+      }
+
+      if (!response.roomId || !response.token) {
+        toast.error("Invalid response from server");
+        return;
+      }
+
       const { startCall } = useVideoCallStore.getState();
       startCall({
         roomId: response.roomId,
@@ -57,7 +67,7 @@ export const VideoCallOverlay = () => {
         timestamp: Date.now(),
         expiresAt: Date.now() + 30000,
       };
-      localStorage.setItem(`videocall_${incomingCall.roomId}`, JSON.stringify(callData));
+      localStorage.setItem(`videocall_${response.roomId}`, JSON.stringify(callData));
 
       clearIncomingCall();
 
@@ -67,20 +77,20 @@ export const VideoCallOverlay = () => {
       const top = (window.screen.height - height) / 2;
       
       const callWindow = window.open(
-        `/video-call/${incomingCall.roomId}`,
-        `videocall_${incomingCall.roomId}`,
+        `/video-call/${response.roomId}`,
+        `videocall_${response.roomId}`,
         `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
       );
 
       if (!callWindow || callWindow.closed || typeof callWindow.closed === 'undefined') {
         toast.error("Popup blocked. Please allow popups for this site.");
         useVideoCallStore.getState().endCall();
-        localStorage.removeItem(`videocall_${incomingCall.roomId}`);
+        localStorage.removeItem(`videocall_${response.roomId}`);
         return;
       }
 
     } catch (error) {
-      toast.error("Failed to join call");
+      toast.error(error?.response?.data?.message || error?.message || "Failed to join call");
       clearIncomingCall();
       useVideoCallStore.getState().endCall();
     }

@@ -88,8 +88,12 @@ export const useVideoCall = () => {
       // Create a new video room
       const response = await createVideoRoom(participantIds);
 
-      if (!response.success) {
-        throw new Error(response.message || "Failed to create video room");
+      if (!response || !response.success) {
+        throw new Error(response?.message || "Failed to create video room");
+      }
+
+      if (!response.roomId || !response.token) {
+        throw new Error("Invalid response from server: missing roomId or token");
       }
 
       const { roomId, token } = response;
