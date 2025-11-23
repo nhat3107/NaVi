@@ -12,8 +12,6 @@ const OTPInput = ({ length = 6, onComplete, disabled = false }) => {
   }, []);
 
   const handleChange = (index, value) => {
-    console.log(`handleChange called: index=${index}, value="${value}"`); // Debug log
-    
     // Handle case where user types multiple characters (like paste)
     if (value.length > 1) {
       // Take only the last character
@@ -22,7 +20,6 @@ const OTPInput = ({ length = 6, onComplete, disabled = false }) => {
     
     // Only allow numbers or empty string
     if (value && !/^\d$/.test(value)) {
-      console.log(`Invalid value: "${value}"`); // Debug log
       return;
     }
 
@@ -31,7 +28,6 @@ const OTPInput = ({ length = 6, onComplete, disabled = false }) => {
     
     // Only update if the value is actually different
     if (oldValue !== value) {
-      console.log(`Updating index ${index}: "${oldValue}" -> "${value}"`); // Debug log
       newOtp[index] = value;
       setOtp(newOtp);
 
@@ -50,11 +46,8 @@ const OTPInput = ({ length = 6, onComplete, disabled = false }) => {
 
       // Call onComplete when all fields are filled
       if (newOtp.every(digit => digit !== '') && onComplete) {
-        console.log(`Calling onComplete with: "${newOtp.join('')}"`); // Debug log
         onComplete(newOtp.join(''));
       }
-    } else {
-      console.log(`No change needed for index ${index}: "${value}"`); // Debug log
     }
   };
 

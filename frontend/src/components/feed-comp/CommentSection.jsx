@@ -98,12 +98,12 @@ const CommentSection = ({ postId, currentUserId, currentUser, onCommentCountChan
   };
 
   return (
-    <div className="border-t border-gray-200 bg-gray-50">
+    <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
       {/* Add Comment Form */}
-      <div className="p-4 bg-white border-b border-gray-200">
+      <div className="p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <form onSubmit={handleSubmitComment} className="flex items-center space-x-2">
           <div className="flex-shrink-0">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm font-semibold">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700 flex items-center justify-center text-white text-sm font-semibold">
               {currentUser?.avatarUrl ? (
                 <img
                   src={currentUser.avatarUrl}
@@ -122,7 +122,7 @@ const CommentSection = ({ postId, currentUserId, currentUser, onCommentCountChan
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Write a comment..."
-              className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-full focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full px-4 py-2 pr-12 border border-gray-300 dark:border-gray-600 rounded-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
               disabled={isSubmitting}
             />
             
@@ -131,8 +131,8 @@ const CommentSection = ({ postId, currentUserId, currentUser, onCommentCountChan
               disabled={!newComment.trim() || isSubmitting}
               className={`absolute right-2 top-1/2 transform -translate-y-1/2 p-1.5 rounded-full transition-all ${
                 newComment.trim() && !isSubmitting
-                  ? "text-blue-600 hover:bg-blue-50"
-                  : "text-gray-400 cursor-not-allowed"
+                  ? "text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+                  : "text-gray-400 dark:text-gray-500 cursor-not-allowed"
               }`}
             >
               {isSubmitting ? (
@@ -149,10 +149,10 @@ const CommentSection = ({ postId, currentUserId, currentUser, onCommentCountChan
       <div className="p-4 max-h-96 overflow-y-auto">
         {isLoading && comments.length === 0 ? (
           <div className="flex justify-center py-4">
-            <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+            <Loader2 className="w-6 h-6 animate-spin text-gray-400 dark:text-gray-500" />
           </div>
         ) : comments.length === 0 ? (
-          <p className="text-center text-gray-500 py-4">
+          <p className="text-center text-gray-500 dark:text-gray-400 py-4">
             No comments yet. Be the first to comment!
           </p>
         ) : (
@@ -160,7 +160,7 @@ const CommentSection = ({ postId, currentUserId, currentUser, onCommentCountChan
             {comments.map((comment) => (
               <div key={comment._id} className="flex space-x-3">
                 <div className="flex-shrink-0">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm font-semibold">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700 flex items-center justify-center text-white text-sm font-semibold">
                     {comment.authorId?.avatarUrl ? (
                       <img
                         src={comment.authorId.avatarUrl}
@@ -174,16 +174,16 @@ const CommentSection = ({ postId, currentUserId, currentUser, onCommentCountChan
                 </div>
 
                 <div className="flex-1">
-                  <div className="bg-white rounded-lg px-4 py-2 shadow-sm">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-sm border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center justify-between mb-1">
-                      <h4 className="font-semibold text-sm text-gray-900">
+                      <h4 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
                         {comment.authorId?.fullName || comment.authorId?.username || "Unknown User"}
                       </h4>
                       
                       {comment.authorId?._id === currentUserId && (
                         <button
                           onClick={() => handleDeleteComment(comment._id)}
-                          className="text-gray-400 hover:text-red-600 transition-colors"
+                          className="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                           title="Delete comment"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -191,10 +191,10 @@ const CommentSection = ({ postId, currentUserId, currentUser, onCommentCountChan
                       )}
                     </div>
                     
-                    <p className="text-gray-800 text-sm">{comment.content}</p>
+                    <p className="text-gray-800 dark:text-gray-200 text-sm">{comment.content}</p>
                   </div>
                   
-                  <p className="text-xs text-gray-500 mt-1 ml-4">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-4">
                     {formatDate(comment.createdAt)}
                   </p>
                 </div>
@@ -207,7 +207,7 @@ const CommentSection = ({ postId, currentUserId, currentUser, onCommentCountChan
         {hasMore && (
           <button
             onClick={() => fetchComments(page + 1)}
-            className="w-full mt-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium"
+            className="w-full mt-4 py-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors font-medium"
             disabled={isLoading}
           >
             {isLoading ? "Loading..." : "Load more comments"}

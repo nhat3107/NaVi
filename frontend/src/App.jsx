@@ -40,15 +40,11 @@ const AppContent = () => {
       
       if (isPopupWindow) {
         // Popup window - init socket but DON'T register user
-        console.log("🪟 Popup window: Socket initialized (no user registration)");
-        console.log("   Socket ID:", socket?.id);
         // Pass skipRegister=true to prevent user-connected emission
         connectUser(authUser._id, true);
       } else {
         // Main window - full socket initialization with user registration
         connectUser(authUser._id, false);
-        console.log("✅ Main window: Socket initialized for user:", authUser._id);
-        console.log("   Socket connected:", socket?.connected);
       }
     }
   }, [isAuthenticated, authUser, isPopupWindow]);
@@ -62,20 +58,17 @@ const AppContent = () => {
       if (e.key === "videocall_ended" && e.newValue) {
         try {
           const data = JSON.parse(e.newValue);
-          console.log("📬 Main window: Received call ended signal from popup", data);
           
           // Clear call state in main window
           const { endCall } = useVideoCallStore.getState();
           endCall();
-          
-          console.log("✅ Main window: Call state cleared, ready for next call");
           
           // Clean up the signal after processing
           setTimeout(() => {
             localStorage.removeItem("videocall_ended");
           }, 500);
         } catch (err) {
-          console.error("Error handling videocall_ended signal:", err);
+          // Silently handle error
         }
       }
     };
@@ -97,104 +90,146 @@ const AppContent = () => {
     );
 
   return (
-      <div className="h-screen">
-        <Toaster />
+    <div className="h-screen">
+      <Toaster />
       {/* Only show VideoCallOverlay in main window, not in popup */}
       {isAuthenticated && !isPopupWindow && <VideoCallOverlay />}
-        <Routes>
-          <Route
-            path="/"
-            element={
-              isAuthenticated && isOnboarded ? (
-                // <ChatPage />
-                <HomePage />
+      <Routes>
+        {/* Public Routes - No authentication required */}
+        <Route
+          path="/signup"
+          element={
+            !isAuthenticated ? (
+              <SignUpPage />
+            ) : (
+              <Navigate to={isOnboarded ? "/" : "/onboarding"} replace />
+            )
+          }
+        />
+        <Route
+          path="/signin"
+          element={
+            !isAuthenticated ? (
+              <SignInPage />
+            ) : (
+              <Navigate to={isOnboarded ? "/" : "/onboarding"} replace />
+            )
+          }
+        />
+        <Route
+          path="/verify-otp"
+          element={
+            !isAuthenticated ? (
+              <OTPVerificationPage />
+            ) : (
+              <Navigate to={isOnboarded ? "/" : "/onboarding"} replace />
+            )
+          }
+        />
+
+        {/* OAuth Callback Routes - Handle authentication */}
+        <Route path="/auth/callback/google" element={<AuthCallbackPage />} />
+        <Route path="/auth/callback/github" element={<AuthCallbackPage />} />
+
+        {/* Onboarding Route - Requires authentication but not onboarding */}
+        <Route
+          path="/onboarding"
+          element={
+            isAuthenticated ? (
+              !isOnboarded ? (
+                <OnBoardingPage />
               ) : (
-                <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} />
+                <Navigate to="/" replace />
               )
-            }
-          />
-          <Route
-            path="/signup"
-            element={
-              !isAuthenticated ? (
-                <SignUpPage />
-              ) : (
-                <Navigate to={isOnboarded ? "/" : "/onboarding"} />
-              )
-            }
-          />
-          <Route
-            path="/signin"
-            element={
-              !isAuthenticated ? (
-                <SignInPage />
-              ) : (
-                <Navigate to={isOnboarded ? "/" : "/onboarding"} />
-              )
-            }
-          />
-          <Route
-            path="/onboarding"
-            element={
-              isAuthenticated ? (
-                !isOnboarded ? (
-                  <OnBoardingPage />
-                ) : (
-                  <Navigate to="/" />
-                )
-              ) : (
-                <Navigate to="/signin" />
-              )
-            }
-          />
-          <Route
-            path="/verify-otp"
-            element={
-              !isAuthenticated ? (
-                <OTPVerificationPage />
-              ) : (
-                <Navigate to={isOnboarded ? "/" : "/onboarding"} />
-              )
-            }
-          />
-          <Route path="/auth/callback/google" element={<AuthCallbackPage />} />
-          <Route path="/auth/callback/github" element={<AuthCallbackPage />} />
-          <Route
-            path="/video-call/:roomId"
-            element={
-              isAuthenticated ? (
-                <VideoCallPage />
-              ) : (
-                <Navigate to="/signin" />
-              )
-            }
-          />
-          <Route
-            path="/chat"
-            element={
-              isAuthenticated && isOnboarded ? (
-                <ChatPage />
-            path="/profile/:userId"
-            element={
-              isAuthenticated && isOnboarded ? (
-                <ProfilePage />
-              ) : (
-                <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} />
-              )
-            }
-          />
-          <Route
-            path="/profile/edit"
-            element={
-              isAuthenticated && isOnboarded ? (
-                <ProfileEditPage />
-              ) : (
-                <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} />
-              )
-            }
-          />
-        </Routes>
-      </div>
+            ) : (
+              <Navigate to="/signin" replace />
+            )
+          }
+        />
+
+        {/* Protected Routes - Require authentication and onboarding */}
+        <Route
+          path="/"
+          element={
+            isAuthenticated && isOnboarded ? (
+              <HomePage />
+            ) : (
+              <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} replace />
+            )
+          }
+        />
+        <Route
+          path="/chat"
+          element={
+            isAuthenticated && isOnboarded ? (
+              <ChatPage />
+            ) : (
+              <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} replace />
+            )
+          }
+        />
+        <Route
+          path="/network"
+          element={
+            isAuthenticated && isOnboarded ? (
+              <Navigate to="/" replace />
+            ) : (
+              <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} replace />
+            )
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            isAuthenticated && isOnboarded ? (
+              <Navigate to="/" replace />
+            ) : (
+              <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} replace />
+            )
+          }
+        />
+        <Route
+          path="/profile/:userId"
+          element={
+            isAuthenticated && isOnboarded ? (
+              <ProfilePage />
+            ) : (
+              <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} replace />
+            )
+          }
+        />
+        <Route
+          path="/profile/edit"
+          element={
+            isAuthenticated && isOnboarded ? (
+              <ProfileEditPage />
+            ) : (
+              <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} replace />
+            )
+          }
+        />
+
+        {/* Video Call Route - Only requires authentication (can be popup window) */}
+        <Route
+          path="/video-call/:roomId"
+          element={
+            isAuthenticated ? (
+              <VideoCallPage />
+            ) : (
+              <Navigate to="/signin" replace />
+            )
+          }
+        />
+
+        {/* Catch-all route - redirect to home or signin */}
+        <Route
+          path="*"
+          element={
+            <Navigate to={isAuthenticated && isOnboarded ? "/" : "/signin"} replace />
+          }
+        />
+      </Routes>
+    </div>
   );
 };
 

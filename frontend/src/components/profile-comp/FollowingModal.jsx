@@ -28,19 +28,19 @@ const FollowingModal = ({ userId, onClose }) => {
 
   return (
     <div 
-      className="fixed inset-0 bg-gray-900/20 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <div 
-        className="bg-white rounded-xl max-w-md w-full max-h-[600px] flex flex-col"
+        className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full max-h-[600px] flex flex-col border border-gray-200 dark:border-gray-700"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900">Following</h2>
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Following</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -51,9 +51,9 @@ const FollowingModal = ({ userId, onClose }) => {
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4">
           {isLoading ? (
-            <div className="text-center py-8 text-gray-500">Loading...</div>
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">Loading...</div>
           ) : following.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
               <p>Not following anyone yet</p>
             </div>
           ) : (
@@ -65,7 +65,7 @@ const FollowingModal = ({ userId, onClose }) => {
                 return (
                   <div
                     key={user._id}
-                    className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+                    className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors cursor-pointer"
                     onClick={() => handleUserClick(user._id)}
                   >
                     <div className="flex items-center space-x-3 flex-1 min-w-0">
@@ -76,17 +76,17 @@ const FollowingModal = ({ userId, onClose }) => {
                           className="w-12 h-12 rounded-full object-cover flex-shrink-0"
                         />
                       ) : (
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold flex-shrink-0">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700 flex items-center justify-center text-white font-semibold flex-shrink-0">
                           {user.username?.[0]?.toUpperCase() || "U"}
                         </div>
                       )}
                       
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-gray-900 truncate">
+                        <p className="font-semibold text-gray-900 dark:text-gray-100 truncate">
                           {user.username}
                         </p>
                         {user.bio && (
-                          <p className="text-sm text-gray-500 truncate">
+                          <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                             {user.bio}
                           </p>
                         )}
@@ -99,8 +99,8 @@ const FollowingModal = ({ userId, onClose }) => {
                         disabled={isFollowing || isUnfollowing}
                         className={`ml-3 px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex-shrink-0 disabled:opacity-50 ${
                           isFollowingThisUser
-                            ? "bg-gray-200 text-gray-900 hover:bg-gray-300"
-                            : "bg-blue-600 text-white hover:bg-blue-700"
+                            ? "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600"
+                            : "bg-indigo-600 dark:bg-indigo-500 text-white hover:bg-indigo-700 dark:hover:bg-indigo-600"
                         }`}
                       >
                         {isFollowingThisUser ? "Unfollow" : "Follow"}

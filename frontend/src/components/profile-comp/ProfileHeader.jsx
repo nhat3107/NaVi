@@ -17,7 +17,7 @@ const ProfileHeader = ({
   const navigate = useNavigate();
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700 p-6 mb-6">
       <div className="flex items-start justify-between">
         <div className="flex items-start space-x-6">
           {/* Avatar */}
@@ -26,17 +26,17 @@ const ProfileHeader = ({
               <img
                 src={profileUser.avatarUrl}
                 alt={profileUser.username}
-                className="w-32 h-32 rounded-full object-cover border-4 border-gray-100"
+                className="w-32 h-32 rounded-full object-cover border-4 border-gray-100 dark:border-gray-700"
               />
             ) : (
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold border-4 border-gray-100">
+              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700 flex items-center justify-center text-white text-4xl font-bold border-4 border-gray-100 dark:border-gray-700">
                 {profileUser.username?.[0]?.toUpperCase() || "U"}
               </div>
             )}
             
             {/* Privacy badge */}
             {profileUser.settings?.privacy === "private" && (
-              <div className="absolute bottom-0 right-0 bg-gray-900 text-white px-2 py-1 rounded-full text-xs">
+              <div className="absolute bottom-0 right-0 bg-gray-900 dark:bg-gray-700 text-white px-2 py-1 rounded-full text-xs">
                 <svg className="w-3 h-3 inline" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
@@ -46,34 +46,34 @@ const ProfileHeader = ({
 
           {/* User Info */}
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-gray-900">{profileUser.username}</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{profileUser.username}</h1>
             
             {!isPrivate && profileUser.bio && (
-              <p className="text-gray-600 mt-2 max-w-xl">{profileUser.bio}</p>
+              <p className="text-gray-600 dark:text-gray-400 mt-2 max-w-xl">{profileUser.bio}</p>
             )}
 
             {/* Stats */}
             <div className="flex items-center space-x-6 mt-4">
               <button
                 onClick={onShowFollowersModal}
-                className="text-center hover:text-blue-600 transition-colors"
+                className="text-center hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
               >
-                <div className="font-bold text-gray-900">{followersCount}</div>
-                <div className="text-sm text-gray-500">Followers</div>
+                <div className="font-bold text-gray-900 dark:text-gray-100">{followersCount}</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">Followers</div>
               </button>
               
               <button
                 onClick={onShowFollowingModal}
-                className="text-center hover:text-blue-600 transition-colors"
+                className="text-center hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
               >
-                <div className="font-bold text-gray-900">{followingCount}</div>
-                <div className="text-sm text-gray-500">Following</div>
+                <div className="font-bold text-gray-900 dark:text-gray-100">{followingCount}</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">Following</div>
               </button>
             </div>
 
             {/* Joined Date */}
             {profileUser.createdAt && (
-              <p className="text-sm text-gray-500 mt-3">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
                 Joined {new Date(profileUser.createdAt).toLocaleDateString("en-US", {
                   month: "long",
                   year: "numeric"
@@ -88,7 +88,7 @@ const ProfileHeader = ({
           {isOwnProfile ? (
             <button
               onClick={() => navigate("/profile/edit")}
-              className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center"
+              className="px-6 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors flex items-center"
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -101,8 +101,8 @@ const ProfileHeader = ({
               disabled={isFollowing || isUnfollowing}
               className={`px-6 py-2 rounded-lg transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed ${
                 isFollowingUser
-                  ? "bg-gray-200 text-gray-900 hover:bg-gray-300"
-                  : "bg-blue-600 text-white hover:bg-blue-700"
+                  ? "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600"
+                  : "bg-indigo-600 dark:bg-indigo-500 text-white hover:bg-indigo-700 dark:hover:bg-indigo-600"
               }`}
             >
               {isFollowing || isUnfollowing ? (

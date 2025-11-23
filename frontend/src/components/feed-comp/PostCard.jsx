@@ -97,11 +97,11 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md mb-4 overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900/50 mb-4 overflow-hidden border border-gray-200 dark:border-gray-700">
       {/* Post Header */}
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700 flex items-center justify-center text-white font-semibold">
             {post.authorId?.avatarUrl ? (
               <img
                 src={post.authorId.avatarUrl}
@@ -114,10 +114,10 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
           </div>
           
           <div>
-            <h3 className="font-semibold text-gray-900">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">
               {post.authorId?.fullName || post.authorId?.username || "Unknown User"}
             </h3>
-            <p className="text-sm text-gray-500">{formatDate(post.createdAt)}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{formatDate(post.createdAt)}</p>
           </div>
         </div>
 
@@ -126,17 +126,17 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
           <div className="relative">
             <button
               onClick={() => setShowMenu(!showMenu)}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
             >
-              <MoreHorizontal className="w-5 h-5 text-gray-600" />
+              <MoreHorizontal className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             </button>
 
             {showMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10">
                 <button
                   onClick={handleDeleteClick}
                   disabled={isDeleting}
-                  className="w-full flex items-center space-x-2 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                  className="w-full flex items-center space-x-2 px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
                 >
                   <Trash2 className="w-4 h-4" />
                   <span>Delete Post</span>
@@ -150,14 +150,14 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
       {/* Post Content */}
       {post.content && (
         <div className="px-4 pb-3">
-          <p className="text-gray-800 whitespace-pre-wrap break-words">
+          <p className="text-gray-800 dark:text-gray-100 whitespace-pre-wrap break-words">
             {isLongContent && !isExpanded ? getTruncatedContent() : post.content}
             {isLongContent && !isExpanded && '...'}
           </p>
           {isLongContent && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="text-blue-600 hover:text-blue-700 font-medium text-sm mt-1 transition-colors"
+              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium text-sm mt-1 transition-colors"
             >
               {isExpanded ? 'See less' : 'See more'}
             </button>
@@ -193,7 +193,7 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
                   controls
                   className={`w-full ${
                     post.media.length === 1
-                      ? "max-h-[600px] object-contain bg-gray-50"
+                      ? "max-h-[600px] object-contain bg-gray-50 dark:bg-gray-800"
                       : "h-64 object-cover"
                   }`}
                 >
@@ -205,7 +205,7 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
                   alt={`Post media ${index + 1}`}
                   className={`w-full ${
                     post.media.length === 1
-                      ? "max-h-[600px] object-contain bg-gray-50"
+                      ? "max-h-[600px] object-contain bg-gray-50 dark:bg-gray-800"
                       : "h-64 object-cover"
                   }`}
                 />
@@ -223,30 +223,30 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
       )}
 
       {/* Post Stats */}
-      <div className="px-4 py-2 flex items-center justify-between text-sm text-gray-600 border-t border-gray-100">
+      <div className="px-4 py-2 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700">
         <span>{likesCount} {likesCount === 1 ? "like" : "likes"}</span>
         <span>{commentsCount} {commentsCount === 1 ? "comment" : "comments"}</span>
       </div>
 
       {/* Action Buttons */}
-      <div className="px-4 py-2 flex items-center justify-around border-t border-gray-100">
+      <div className="px-4 py-2 flex items-center justify-around border-t border-gray-100 dark:border-gray-700">
         <button
           onClick={handleLike}
-          className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
         >
-          <Heart className={`w-5 h-5 transition-colors ${isLiked ? "fill-red-600 text-red-600" : ""}`} />
+          <Heart className={`w-5 h-5 transition-colors ${isLiked ? "fill-red-600 text-red-600 dark:fill-red-500 dark:text-red-500" : ""}`} />
           <span className="font-medium">Like</span>
         </button>
 
         <button
           onClick={() => setShowComments(!showComments)}
-          className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
         >
           <MessageCircle className="w-5 h-5" />
           <span className="font-medium">Comment</span>
         </button>
 
-        <button className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
+        <button className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           <Share2 className="w-5 h-5" />
           <span className="font-medium">Share</span>
         </button>
@@ -264,16 +264,16 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-white/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+        <div className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-all border border-gray-200 dark:border-gray-700">
             <div className="text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                <Trash2 className="h-6 w-6 text-red-600" />
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
+                <Trash2 className="h-6 w-6 text-red-600 dark:text-red-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 Delete this post?
               </h3>
-              <p className="text-sm text-gray-500 mb-6">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
                 This action can't be undone. Your post will be permanently removed from your profile and the feed.
               </p>
             </div>
@@ -282,14 +282,14 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
               <button
                 onClick={handleCancelDelete}
                 disabled={isDeleting}
-                className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmDelete}
                 disabled={isDeleting}
-                className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-2.5 bg-red-600 dark:bg-red-500 text-white rounded-lg font-medium hover:bg-red-700 dark:hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isDeleting ? "Deleting..." : "Delete"}
               </button>

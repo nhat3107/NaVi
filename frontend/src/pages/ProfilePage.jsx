@@ -46,10 +46,10 @@ const ProfilePage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen bg-gray-50">
+      <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
         <div className="flex-1 ml-20 flex items-center justify-center">
-          <div className="text-lg text-gray-600">Loading profile...</div>
+          <div className="text-lg text-gray-600 dark:text-gray-400">Loading profile...</div>
         </div>
       </div>
     );
@@ -57,15 +57,15 @@ const ProfilePage = () => {
 
   if (!profileUser) {
     return (
-      <div className="flex h-screen bg-gray-50">
+      <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
         <div className="flex-1 ml-20 flex items-center justify-center">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">User not found</h2>
-            <p className="text-gray-600 mb-4">This user doesn't exist or has been removed.</p>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">User not found</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">This user doesn't exist or has been removed.</p>
             <button
               onClick={() => navigate("/")}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600"
             >
               Go Home
             </button>
@@ -76,7 +76,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
       
       <div className="flex-1 ml-20 overflow-y-auto">
