@@ -16,15 +16,15 @@ const SearchInput = ({ searchTerm, onSearchChange, onClear }) => {
         placeholder="Search"
         value={searchTerm}
         onChange={(e) => onSearchChange(e.target.value)}
-        className="w-full px-4 py-3 bg-gray-100 rounded-lg focus:outline-none pr-10"
+        className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 pr-10 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
       />
       {searchTerm && (
         <button
           onClick={onClear}
-          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 rounded-full transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition-colors"
         >
           <svg
-            className="w-5 h-5 text-gray-500"
+            className="w-5 h-5 text-gray-500 dark:text-gray-400"
             fill="currentColor"
             viewBox="0 0 20 20"
           >

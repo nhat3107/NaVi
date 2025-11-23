@@ -7,20 +7,20 @@ const RecentSearches = ({ recentSearches, onUserClick, onRemoveRecent, onClearAl
 
   return (
     <div>
-      <div className="flex items-center justify-between p-4 border-b border-gray-200">
-        <h3 className="font-semibold text-gray-900">Recent</h3>
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 className="font-semibold text-gray-900 dark:text-gray-100">Recent</h3>
         <button
           onClick={onClearAll}
-          className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+          className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium"
         >
           Clear all
         </button>
       </div>
-      <div className="divide-y divide-gray-200">
+      <div className="divide-y divide-gray-200 dark:divide-gray-700">
         {recentSearches.map((user) => (
           <div
             key={user._id}
-            className="flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors group"
+            className="flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
           >
             <button
               onClick={() => onUserClick(user)}
@@ -32,11 +32,11 @@ const RecentSearches = ({ recentSearches, onUserClick, onRemoveRecent, onClearAl
                 className="w-12 h-12 rounded-full object-cover"
               />
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-900 truncate">
+                <p className="font-semibold text-gray-900 dark:text-gray-100 truncate">
                   {user.username}
                 </p>
                 {user.bio && (
-                  <p className="text-sm text-gray-500 truncate">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                     {user.bio}
                   </p>
                 )}
@@ -44,10 +44,10 @@ const RecentSearches = ({ recentSearches, onUserClick, onRemoveRecent, onClearAl
             </button>
             <button
               onClick={(e) => onRemoveRecent(user._id, e)}
-              className="p-2 opacity-0 group-hover:opacity-100 hover:bg-gray-200 rounded-full transition-all"
+              className="p-2 opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition-all"
             >
               <svg
-                className="w-5 h-5 text-gray-500"
+                className="w-5 h-5 text-gray-500 dark:text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

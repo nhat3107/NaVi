@@ -17,7 +17,7 @@ import { moderatePost, moderateComment } from "../middlewares/post.middleware.js
 const router = Router();
 
 // Post CRUD routes
-router.post("/create-post", protectRoute, createPost); // Will add moderation middleware here
+router.post("/create-post", protectRoute, moderatePost, createPost);
 router.get("/get-feed", protectRoute, getFeedPosts);
 router.get("/get-all", protectRoute, getAllPosts);
 router.get("/get-post/:id", protectRoute, getPostById);

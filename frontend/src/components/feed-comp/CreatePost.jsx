@@ -66,7 +66,7 @@ const CreatePost = ({ onPostCreated, userAvatar, userName }) => {
   const isDisabled = (!content.trim() && mediaFiles.length === 0) || isCreating;
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-4">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900/50 p-4 mb-4 border border-gray-200 dark:border-gray-700">
       <form onSubmit={handleSubmit}>
         {/* Header - Single Line */}
         <div className="flex items-center space-x-3 mb-3">
@@ -78,7 +78,7 @@ const CreatePost = ({ onPostCreated, userAvatar, userName }) => {
                 className="w-10 h-10 rounded-full object-cover"
               />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700 flex items-center justify-center text-white font-semibold">
                 {userName?.[0]?.toUpperCase() || "U"}
               </div>
             )}
@@ -90,7 +90,7 @@ const CreatePost = ({ onPostCreated, userAvatar, userName }) => {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="What's on your mind?"
-              className="w-full px-4 py-2.5 border-none rounded-2xl bg-gray-100 focus:outline-none focus:bg-gray-200 text-gray-800 placeholder-gray-500 transition-colors resize-none min-h-[42px] max-h-[200px] overflow-y-auto"
+              className="w-full px-4 py-2.5 border-none rounded-2xl bg-gray-100 dark:bg-gray-700 focus:outline-none focus:bg-gray-200 dark:focus:bg-gray-600 text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors resize-none min-h-[42px] max-h-[200px] overflow-y-auto"
               disabled={isCreating}
               rows={1}
               onInput={(e) => {
@@ -134,32 +134,32 @@ const CreatePost = ({ onPostCreated, userAvatar, userName }) => {
 
         {/* Upload Progress */}
         {isUploading && (
-          <div className="mb-4 text-sm text-blue-600 flex items-center">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+          <div className="mb-4 text-sm text-indigo-600 dark:text-indigo-400 flex items-center">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600 dark:border-indigo-400 mr-2"></div>
             Uploading media...
           </div>
         )}
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+        <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-2">
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex items-center space-x-1 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center space-x-1 px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               disabled={isCreating || mediaFiles.length >= 4}
               title={mediaFiles.length >= 4 ? "Maximum 4 media files" : "Add media"}
             >
-              <Image className="w-5 h-5 text-green-600" />
+              <Image className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
               <span className="text-sm font-medium">Media</span>
             </button>
             
             <button
               type="button"
-              className="flex items-center space-x-1 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center space-x-1 px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               disabled={isCreating}
             >
-              <Smile className="w-5 h-5 text-yellow-500" />
+              <Smile className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
               <span className="text-sm font-medium">Emoji</span>
             </button>
           </div>
@@ -169,8 +169,8 @@ const CreatePost = ({ onPostCreated, userAvatar, userName }) => {
             disabled={isDisabled}
             className={`px-6 py-2 rounded-lg font-medium transition-all ${
               isDisabled
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-md hover:shadow-lg"
+                ? "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                : "bg-indigo-600 dark:bg-indigo-500 text-white hover:bg-indigo-700 dark:hover:bg-indigo-600 shadow-md hover:shadow-lg"
             }`}
           >
             {isCreating ? "Posting..." : "Post"}

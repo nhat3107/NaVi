@@ -33,7 +33,6 @@ export const getAuthUser = async () => {
     return response.data;
   } catch (error) {
     // Return null if user is not authenticated
-    console.log("Error in getAuthUser:", error);
     return { user: null };
   }
 };
@@ -163,13 +162,15 @@ export async function uploadMedia(formData) {
       resource_type, // "image" hoặc "video"
     };
   } catch (error) {
-    console.error("Upload error:", error.response?.data || error.message);
     return {
       success: false,
       message: error.response?.data?.error?.message || "Upload failed",
     };
   }
 }
+
+// Alias for uploadMedia (for backward compatibility)
+export const uploadImage = uploadMedia;
 
 // Video call API functions
 export const getVideoSDKToken = async () => {
@@ -180,15 +181,6 @@ export const getVideoSDKToken = async () => {
 export const createVideoCall = async (participantIds) => {
   const response = await axiosInstance.post("/videocall/create", {
     participantIds,
-// Post API functions
-export const createPost = async (postData) => {
-  const response = await axiosInstance.post("/post/create-post", postData);
-  return response.data;
-};
-
-export const getFeedPosts = async (page = 1, limit = 10) => {
-  const response = await axiosInstance.get("/post/get-feed", {
-    params: { page, limit },
   });
   return response.data;
 };
@@ -210,6 +202,22 @@ export const endVideoCall = async (roomId) => {
 
 export const getVideoCallHistory = async () => {
   const response = await axiosInstance.get("/videocall/history");
+  return response.data;
+};
+
+// Post API functions
+export const createPost = async (postData) => {
+  const response = await axiosInstance.post("/post/create-post", postData);
+  return response.data;
+};
+
+export const getFeedPosts = async (page = 1, limit = 10) => {
+  const response = await axiosInstance.get("/post/get-feed", {
+    params: { page, limit },
+  });
+  return response.data;
+};
+
 export const getAllPosts = async (page = 1, limit = 10) => {
   const response = await axiosInstance.get("/post/get-all", {
     params: { page, limit },

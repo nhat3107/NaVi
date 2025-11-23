@@ -20,36 +20,36 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
       <div className="flex flex-1 ml-20 relative overflow-hidden">
-      {(() => {
-        const mobileVisible = !selectedChat || sidebarOpen;
-        const mobileClasses = mobileVisible
-          ? "absolute inset-0 z-20"
-          : "hidden";
-        return (
-          <div
-            className={`${mobileClasses} md:static md:block w-full md:w-1/4 h-full border-r bg-white dark:bg-gray-800`}
-          >
-            <Sidebar
-              onClose={() => setSidebarOpen(false)}
-              onOpenCreateGroup={() => setCreateGroupOpen(true)}
-              onSelectChat={handleSelectChat}
-              selectedChatId={selectedChat?.id}
-            />
-          </div>
-        );
-      })()}
+        {(() => {
+          const mobileVisible = !selectedChat || sidebarOpen;
+          const mobileClasses = mobileVisible
+            ? "absolute inset-0 z-20"
+            : "hidden";
+          return (
+            <div
+              className={`${mobileClasses} md:static md:block w-full md:w-1/4 h-full border-r bg-white dark:bg-gray-800`}
+            >
+              <Sidebar
+                onClose={() => setSidebarOpen(false)}
+                onOpenCreateGroup={() => setCreateGroupOpen(true)}
+                onSelectChat={handleSelectChat}
+                selectedChatId={selectedChat?.id}
+              />
+            </div>
+          );
+        })()}
 
-      {/* Chat container */}
-      <div className={`flex-1 ${!selectedChat ? "hidden md:block" : ""}`}>
-        <ChatContainer
-          toggleSidebar={() => setSidebarOpen(true)}
-          selectedChat={selectedChat}
-          onCloseChat={() => setSelectedChat(null)}
-        />
-      </div>
+        {/* Chat container */}
+        <div className={`flex-1 ${!selectedChat ? "hidden md:block" : ""}`}>
+          <ChatContainer
+            toggleSidebar={() => setSidebarOpen(true)}
+            selectedChat={selectedChat}
+            onCloseChat={() => setSelectedChat(null)}
+          />
+        </div>
 
         <CreateGroupModal
           open={createGroupOpen}
@@ -77,35 +77,27 @@ export default function ChatPage() {
                 setSelectedChat({
                   id: chat._id,
                   _id: chat._id,
-                  isGroup: true,
-                  groupName: chat.groupName,
+                  name: chat.groupName,
+                  avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(
+                    chat.groupName || chat._id
+                  )}`,
+                  lastMessage: chat.lastMessage || "",
+                  type: "group",
                   participants: chat.participants || [],
-                };
-                return [optimistic, ...prev];
-              });
-              setSelectedChat({
-                id: chat._id,
-                _id: chat._id,
-                name: chat.groupName,
-                avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(
-                  chat.groupName || chat._id
-                )}`,
-                lastMessage: chat.lastMessage || "",
-                type: "group",
-                participants: chat.participants || [], // Include participants
-                isGroup: true,
-              });
-              toast.success("Group created successfully");
-            } else {
-              toast.error("Failed to create group");
+                  isGroup: true,
+                });
+                toast.success("Group created successfully");
+              } else {
+                toast.error("Failed to create group");
+              }
+            } catch (err) {
+              toast.error(err?.response?.data?.message || "Error creating group");
+            } finally {
+              setCreateGroupOpen(false);
             }
-          } catch (err) {
-            toast.error(err?.response?.data?.message || "Error creating group");
-          } finally {
-            setCreateGroupOpen(false);
-          }
-        }}
-      />
+          }}
+        />
+      </div>
     </div>
   );
 }
