@@ -8,7 +8,15 @@ const PostSchema = new mongoose.Schema(
       required: true,
     },
     content: String,
-    mediaUrls: [String],
+    media: [
+      {
+        url: String,
+        type: {
+          type: String,
+          enum: ["image", "video"],
+        },
+      },
+    ],
     aiModeration: {
       nsfw: { type: Boolean, default: false },
       violence: { type: Boolean, default: false },

@@ -104,7 +104,7 @@ const validateBirthDate = (day, month, year) => {
   if (!isMinimumAge(day, month, year)) {
     return {
       success: false,
-      message: 'You must be at least 13 years old to register'
+      message: 'You must be at least 13 years old'
     };
   }
   

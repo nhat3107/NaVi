@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Black background with rounded corners -->
+  <rect width="64" height="64" rx="16" ry="16" fill="#000000"/>
+  
+  <!-- White border with rounded corners -->
+  <rect x="8" y="8" width="48" height="48" rx="10" ry="10" fill="none" stroke="white" stroke-width="2.5"/>
+  
+  <!-- Network nodes (white) -->
+  <circle cx="23" cy="26" r="3.5" fill="white"/>
+  <circle cx="41" cy="21" r="3.5" fill="white"/>
+  <circle cx="34" cy="41" r="3.5" fill="white"/>
+  
+  <!-- Connecting lines (white) -->
+  <path d="M25.5 28.5 L31.5 38" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <path d="M38.5 23.5 L35.5 37.5" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <path d="M26 26 L38 21" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+</svg>
+

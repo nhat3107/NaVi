@@ -155,3 +155,55 @@ export const searchUsersByUsername = async (
 
   return users;
 };
+
+// Follow a user
+export const followUser = async (currentUserId, targetUserId) => {
+  // Add targetUser to current user's following
+  await User.findByIdAndUpdate(currentUserId, {
+    $addToSet: { following: targetUserId },
+  });
+
+  // Add currentUser to target user's followers
+  await User.findByIdAndUpdate(targetUserId, {
+    $addToSet: { followers: currentUserId },
+  });
+
+  return { success: true };
+};
+
+// Unfollow a user
+export const unfollowUser = async (currentUserId, targetUserId) => {
+  // Remove targetUser from current user's following
+  await User.findByIdAndUpdate(currentUserId, {
+    $pull: { following: targetUserId },
+  });
+
+  // Remove currentUser from target user's followers
+  await User.findByIdAndUpdate(targetUserId, {
+    $pull: { followers: currentUserId },
+  });
+
+  return { success: true };
+};
+
+// Get user's followers with populated data
+export const getUserFollowers = async (userId, limit = 20) => {
+  const user = await User.findById(userId)
+    .select("followers")
+    .populate("followers", "username avatarUrl bio")
+    .limit(limit)
+    .lean();
+
+  return user?.followers || [];
+};
+
+// Get user's following with populated data
+export const getUserFollowing = async (userId, limit = 20) => {
+  const user = await User.findById(userId)
+    .select("following")
+    .populate("following", "username avatarUrl bio")
+    .limit(limit)
+    .lean();
+
+  return user?.following || [];
+};

@@ -7,6 +7,8 @@ import HomePage from "./pages/HomePage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
 import OTPVerificationPage from "./pages/OTPVerificationPage";
 import VideoCallPage from "./pages/VideoCallPage";
+import ProfilePage from "./pages/ProfilePage";
+import ProfileEditPage from "./pages/ProfileEditPage";
 import useAuthUser from "./hooks/useAuthUser.js";
 import ChatPage from "./pages/ChatPage.jsx";
 import { Toaster } from "react-hot-toast";
@@ -104,7 +106,8 @@ const AppContent = () => {
             path="/"
             element={
               isAuthenticated && isOnboarded ? (
-                <ChatPage />
+                // <ChatPage />
+                <HomePage />
               ) : (
                 <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} />
               )
@@ -171,6 +174,20 @@ const AppContent = () => {
             element={
               isAuthenticated && isOnboarded ? (
                 <ChatPage />
+            path="/profile/:userId"
+            element={
+              isAuthenticated && isOnboarded ? (
+                <ProfilePage />
+              ) : (
+                <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} />
+              )
+            }
+          />
+          <Route
+            path="/profile/edit"
+            element={
+              isAuthenticated && isOnboarded ? (
+                <ProfileEditPage />
               ) : (
                 <Navigate to={!isAuthenticated ? "/signin" : "/onboarding"} />
               )

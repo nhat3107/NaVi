@@ -20,6 +20,7 @@
     "framer-motion": "^12.23.22",
     "install": "^0.13.0",
     "npm": "^11.6.2",
+    "lucide-react": "^0.547.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-hot-toast": "^2.6.0",
