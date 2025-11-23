@@ -29,7 +29,6 @@ export const moderateMessage = async (req, res, next) => {
 
     const result = moderation.results[0];
     const { flagged, categories } = result;
-    console.dir(result, { depth: null });
 
     if (flagged) {
       const violatedCategories = Object.entries(categories)
@@ -56,7 +55,6 @@ export const moderateMessage = async (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error("Moderation error:", error);
     return res.status(500).json({ message: "Moderation failed" });
   }
 };

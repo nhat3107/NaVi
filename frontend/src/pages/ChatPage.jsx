@@ -80,14 +80,15 @@ export default function ChatPage() {
                 )}`,
                 lastMessage: chat.lastMessage || "",
                 type: "group",
+                participants: chat.participants || [], // Include participants
+                isGroup: true,
               });
-              toast.success("Tạo nhóm thành công");
+              toast.success("Group created successfully");
             } else {
-              toast.error("Không thể tạo nhóm");
+              toast.error("Failed to create group");
             }
           } catch (err) {
-            console.error("Create group error", err);
-            toast.error(err?.response?.data?.message || "Lỗi tạo nhóm");
+            toast.error(err?.response?.data?.message || "Error creating group");
           } finally {
             setCreateGroupOpen(false);
           }

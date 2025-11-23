@@ -1,65 +1,76 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useChatStore } from "../stores/useChatStore";
-import { sendMessage as sendMessageAPI } from "../lib/api";
-import { uploadImage } from "../lib/api";
+import { sendMessage as sendMessageAPI, uploadImage } from "../lib/api";
 
 export const useSendMessage = (chatId, options = {}) => {
-  const addMessage = useChatStore((s) => s.addMessage);
-
   const queryClient = useQueryClient();
 
   const { mutate: sendMessage, isPending } = useMutation({
     mutationFn: async (payload) => {
-      // payload can be string (text) or File (image)
       if (payload instanceof File) {
-        // upload to Cloudinary and send as image
-        const formData = { file: payload };
-        const res = await uploadImage(formData);
+        const res = await uploadImage({ file: payload });
         if (!res?.success || !res?.url) {
-          throw new Error(res?.message || "Upload failed");
+          throw new Error(res?.message || "Image upload failed");
         }
         return sendMessageAPI(chatId, { type: "image", content: res.url });
       }
-      // text message
+
       const content =
         typeof payload === "string" ? payload : String(payload || "");
       return sendMessageAPI(chatId, { type: "text", content });
     },
-    onSuccess: (resp) => {
+
+    onMutate: async (payload) => {
+      await queryClient.cancelQueries({ queryKey: ["messages", chatId] });
+      const fakeId = `temp-${Date.now()}`;
+      const optimisticMessage = {
+        _id: fakeId,
+        chatId,
+        senderId: "me",
+        type: payload instanceof File ? "image" : "text",
+        content:
+          payload instanceof File
+            ? URL.createObjectURL(payload)
+            : String(payload || ""),
+        createdAt: new Date().toISOString(),
+        optimistic: true,
+      };
+
+      queryClient.setQueryData(["messages", chatId], (old) => {
+        if (!old?.pages) return old;
+        const pages = [...old.pages];
+        const lastIdx = pages.length > 0 ? pages.length - 1 : 0;
+        const lastPage = Array.isArray(pages[lastIdx]) ? pages[lastIdx] : [];
+        pages[lastIdx] = [...lastPage, optimisticMessage];
+        return { ...old, pages };
+      });
+
+      return { fakeId, payload };
+    },
+
+    onSuccess: (resp, _payload, context) => {
       const msg = resp?.message || resp?.data || resp;
-      if (msg) {
-        // Update local store
-        addMessage(msg);
-        // Update infinite query cache for immediate re-render (preserve shape)
-        queryClient.setQueryData(["messages", chatId], (old) => {
-          if (
-            old &&
-            Array.isArray(old.pages) &&
-            Array.isArray(old.pageParams)
-          ) {
-            const pages = [...old.pages];
-            const lastIdx = pages.length > 0 ? pages.length - 1 : 0;
-            const lastPage = Array.isArray(pages[lastIdx])
-              ? pages[lastIdx]
-              : [];
-            const id = msg?._id;
-            if (id && lastPage.some((m) => m?._id === id)) return old; // de-dupe
-            const updatedLast = [...lastPage, msg];
-            pages[lastIdx] = updatedLast;
-            return { ...old, pages };
-          }
-          return old; // do not mutate if shape is unexpected
-        });
+      if (!msg) return;
+
+      queryClient.setQueryData(["messages", chatId], (old) => {
+        if (!old?.pages) return old;
+        const pages = old.pages.map((page) =>
+          page.map((m) => (m._id === context.fakeId ? msg : m))
+        );
+        return { ...old, pages };
+      });
+
+      if (context?.payload instanceof File) {
+        URL.revokeObjectURL(context.payload.previewUrl || "");
       }
     },
+
     onError: (err) => {
       const msg =
-        err?.response?.data?.message ||
-        "Tin nhắn bị chặn bởi hệ thống kiểm duyệt";
-      if (typeof options.onError === "function") {
-        options.onError(msg);
-      }
+        err?.response?.data?.message || "Message blocked or sent failed";
+      options?.onError?.(msg);
     },
+
+    onSettled: () => {},
   });
 
   return { sendMessage, isPending };

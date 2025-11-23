@@ -10,7 +10,6 @@ export default function MessageInput({ onSend }) {
     e.preventDefault();
     if (!text.trim() && !selectedImage) return;
 
-    // Send message: if image selected -> send image file; else text
     if (selectedImage) {
       onSend(selectedImage);
     }
@@ -25,13 +24,11 @@ export default function MessageInput({ onSend }) {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
       alert("File is too large. Maximum size: 5MB");
       return;
     }
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       alert("Please select a valid image file");
       return;
@@ -59,7 +56,6 @@ export default function MessageInput({ onSend }) {
 
   return (
     <div className="border-t bg-white dark:bg-gray-800">
-      {/* Image Preview */}
       {imagePreview && (
         <div className="p-3 border-b border-gray-200 dark:border-gray-700">
           <div className="relative inline-block">
@@ -91,9 +87,7 @@ export default function MessageInput({ onSend }) {
         </div>
       )}
 
-      {/* Input Form */}
       <form onSubmit={handleSend} className="flex items-center gap-2 p-3">
-        {/* Hidden file input */}
         <input
           ref={fileInputRef}
           type="file"
@@ -102,11 +96,10 @@ export default function MessageInput({ onSend }) {
           className="hidden"
         />
 
-        {/* Image picker button */}
         <button
           type="button"
           onClick={handleImageClick}
-          className="p-2 text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+          className="p-2 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
           title="Select image"
         >
           <svg
@@ -124,19 +117,17 @@ export default function MessageInput({ onSend }) {
           </svg>
         </button>
 
-        {/* Text input */}
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Enter message..."
-          className="flex-1 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
         />
 
-        {/* Send button */}
         <button
           type="submit"
           disabled={!text.trim() && !selectedImage}
-          className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+          className="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
         >
           <svg
             className="w-5 h-5"

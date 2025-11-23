@@ -26,15 +26,14 @@ export default function EmptyChatState() {
       {/* Description */}
       <p className="text-gray-600 dark:text-gray-400 text-center max-w-md mb-8">
         Choose a chat from the left list or search for a user to start chatting
-        để bắt đầu chat
       </p>
 
       {/* Features */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl">
         <div className="text-center">
-          <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
+          <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
             <svg
-              className="w-6 h-6 text-blue-600 dark:text-blue-400"
+              className="w-6 h-6 text-indigo-600 dark:text-indigo-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

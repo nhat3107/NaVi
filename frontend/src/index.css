@@ -1,1 +1,32 @@
 @import "tailwindcss";
+
+/* Video quality optimizations */
+video {
+  /* Hardware acceleration for better performance */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  
+  /* Better rendering quality */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  
+  /* Smooth playback */
+  will-change: transform;
+  
+  /* Prevent video flickering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Optimize video containers */
+.video-container {
+  /* GPU acceleration */
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  
+  /* Better compositing */
+  will-change: transform;
+  isolation: isolate;
+}

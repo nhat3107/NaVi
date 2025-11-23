@@ -10,6 +10,7 @@ import authRoutes from "./routers/auth.route.js";
 import oauthRoutes from "./routers/oauth.route.js";
 import chatRoutes from "./routers/chat.route.js";
 import messageRoutes from "./routers/message.route.js";
+import videoCallRoutes from "./routers/videoCall.route.js";
 
 const PORT = process.env.PORT || 5000;
 
@@ -54,6 +55,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/oauth", oauthRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
+app.use("/api/videocall", videoCallRoutes);
 
 if (process.env.NODE_ENV !== "test") {
   server.listen(PORT, "0.0.0.0", () => {

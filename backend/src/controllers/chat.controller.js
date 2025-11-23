@@ -55,7 +55,6 @@ export const createChat = async (req, res) => {
         : "Chat created successfully";
     res.status(status).json({ message, chat: result.chat });
   } catch (err) {
-    console.log("Error in createChat controller", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

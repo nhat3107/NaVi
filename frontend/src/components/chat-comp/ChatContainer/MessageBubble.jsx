@@ -7,6 +7,10 @@ export default function MessageBubble({ message }) {
     message?.senderId?._id || message?.senderId || message?.sender;
   const isMe = senderId && user?._id && String(senderId) === String(user._id);
 
+  if (message?.type === "call") {
+    return null;
+  }
+
   return (
     <motion.div
       layout
@@ -17,7 +21,6 @@ export default function MessageBubble({ message }) {
       className={`flex ${isMe ? "justify-end" : "justify-start"}`}
     >
       <div className="flex items-end gap-2 max-w-full">
-        {/* Sender avatar on left for incoming messages */}
         {!isMe && message?.senderId?.avatarUrl && (
           <img
             src={message.senderId.avatarUrl}
@@ -28,11 +31,10 @@ export default function MessageBubble({ message }) {
         <div
           className={`px-4 py-2 rounded-2xl max-w-xs md:max-w-md ${
             isMe
-              ? "bg-blue-500 text-white rounded-br-none"
+              ? "bg-indigo-600 dark:bg-indigo-500 text-white rounded-br-none"
               : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-bl-none"
           }`}
         >
-          {/* Image display */}
           {message?.type === "image" && message?.content && (
             <div className="mb-2">
               <img
@@ -44,18 +46,16 @@ export default function MessageBubble({ message }) {
             </div>
           )}
 
-          {/* Text content */}
           {(!message?.type || message?.type === "text") && (
             <div className="break-words">
               {message?.content || message?.text}
             </div>
           )}
 
-          {/* Timestamp */}
           {(message?.createdAt || message?.timestamp) && (
             <div
               className={`text-xs mt-1 ${
-                isMe ? "text-blue-100" : "text-gray-500 dark:text-gray-400"
+                isMe ? "text-indigo-100" : "text-gray-500 dark:text-gray-400"
               }`}
             >
               {new Date(

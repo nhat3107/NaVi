@@ -168,3 +168,36 @@ export async function uploadImage(formData) {
     };
   }
 }
+
+// Video call API functions
+export const getVideoSDKToken = async () => {
+  const response = await axiosInstance.get("/videocall/token");
+  return response.data;
+};
+
+export const createVideoCall = async (participantIds) => {
+  const response = await axiosInstance.post("/videocall/create", {
+    participantIds,
+  });
+  return response.data;
+};
+
+export const joinVideoCall = async (roomId) => {
+  const response = await axiosInstance.post(`/videocall/join/${roomId}`);
+  return response.data;
+};
+
+export const leaveVideoCall = async (roomId) => {
+  const response = await axiosInstance.post(`/videocall/leave/${roomId}`);
+  return response.data;
+};
+
+export const endVideoCall = async (roomId) => {
+  const response = await axiosInstance.post(`/videocall/end/${roomId}`);
+  return response.data;
+};
+
+export const getVideoCallHistory = async () => {
+  const response = await axiosInstance.get("/videocall/history");
+  return response.data;
+};
