@@ -145,10 +145,10 @@ export default function MessageList({ messages = [], onLoadMore, isLoading, hasE
   }
 
   return (
-    <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-1.5 sm:space-y-2">
+    <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-5">
       {isLoading && messages.length > 0 && (
-        <div className="flex justify-center py-2">
-          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-indigo-500"></div>
+        <div className="flex justify-center py-3 sm:py-4">
+          <div className="animate-spin rounded-full h-6 w-6 sm:h-7 sm:w-7 border-t-2 border-b-2 border-indigo-500"></div>
         </div>
       )}
       {messages.map((m) => (
