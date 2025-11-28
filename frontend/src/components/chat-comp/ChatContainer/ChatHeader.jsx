@@ -44,34 +44,34 @@ export default function ChatHeader({
   };
 
   return (
-    <div className="flex items-center justify-between p-4 border-b bg-white dark:bg-gray-800">
+    <div className="flex items-center justify-between p-3 sm:p-4 border-b bg-white dark:bg-gray-800">
       <button
         onClick={toggleSidebar}
-        className="md:hidden text-gray-600 dark:text-gray-300 text-2xl"
+        className="md:hidden text-gray-600 dark:text-gray-300 text-xl sm:text-2xl"
       >
         ☰
       </button>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5 sm:gap-3">
         <img
           src={selectedChat?.avatar || "https://i.pravatar.cc/40?img=5"}
           alt={selectedChat?.name || "Chat"}
-          className="w-10 h-10 rounded-full"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full"
         />
         <div>
-          <h3 className="font-semibold text-gray-800 dark:text-gray-100">
+          <h3 className="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100">
             {selectedChat?.name || "Select a chat"}
           </h3>
         </div>
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-1.5 sm:gap-2">
         <button
           onClick={handleVideoCall}
-          className="p-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors group"
+          className="p-1.5 sm:p-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors group"
           title="Start video call"
         >
           <svg
-            className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
+            className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -86,11 +86,11 @@ export default function ChatHeader({
         </button>
         <button
           onClick={onCloseChat}
-          className="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors"
+          className="p-1.5 sm:p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors"
           title="Close chat"
         >
           <svg
-            className="w-5 h-5"
+            className="w-4 h-4 sm:w-5 sm:h-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

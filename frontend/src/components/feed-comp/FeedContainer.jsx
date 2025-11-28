@@ -75,22 +75,24 @@ const FeedContainer = ({ currentUser, feedType = "feed", userId = null }) => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div className="max-w-3xl mx-auto px-2.5 sm:px-3 md:px-4 py-2.5 sm:py-3 md:py-4 bg-gray-50 dark:bg-gray-900 min-h-screen">
       {/* Create Post Section - Only show for feed type */}
       {feedType === "feed" && currentUser && (
-        <CreatePost
-          onPostCreated={handlePostCreated}
-          userAvatar={currentUser.avatarUrl}
-          userName={currentUser.fullName || currentUser.username}
-        />
+        <div className="mb-2 sm:mb-3">
+          <CreatePost
+            onPostCreated={handlePostCreated}
+            userAvatar={currentUser.avatarUrl}
+            userName={currentUser.fullName || currentUser.username}
+          />
+        </div>
       )}
 
       {/* Posts List */}
       {posts.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+        <div className="text-center py-8 sm:py-12">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 sm:mb-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
             <svg
-              className="w-12 h-12 text-gray-400 dark:text-gray-500"
+              className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 dark:text-gray-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -103,17 +105,17 @@ const FeedContainer = ({ currentUser, feedType = "feed", userId = null }) => {
               />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
             No posts yet
           </h3>
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
             {feedType === "feed"
               ? "Be the first to share something!"
               : "No posts to display."}
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-2 sm:space-y-3">
           {posts.map((post, index) => (
             <div
               key={post._id}
@@ -133,14 +135,14 @@ const FeedContainer = ({ currentUser, feedType = "feed", userId = null }) => {
 
       {/* Loading More Indicator */}
       {isFetchingNextPage && (
-        <div className="flex justify-center items-center py-8">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-600 dark:text-indigo-400" />
+        <div className="flex justify-center items-center py-4 sm:py-6">
+          <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-indigo-600 dark:text-indigo-400" />
         </div>
       )}
 
       {/* End of Feed Message */}
       {!hasMore && posts.length > 0 && (
-        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+        <div className="text-center py-4 sm:py-6 text-sm sm:text-base text-gray-500 dark:text-gray-400">
           <p>You've reached the end of the feed</p>
         </div>
       )}

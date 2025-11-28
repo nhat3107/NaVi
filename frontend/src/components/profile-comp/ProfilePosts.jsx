@@ -13,9 +13,9 @@ const ProfilePosts = ({
   onPostUpdated,
 }) => {
   return (
-    <div className="space-y-4">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700 px-6 py-4">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Posts</h2>
+    <div className="space-y-3 sm:space-y-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-3 sm:py-4">
+        <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100">Posts</h2>
       </div>
 
       {isLoading ? (

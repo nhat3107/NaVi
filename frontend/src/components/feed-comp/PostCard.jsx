@@ -97,27 +97,27 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900/50 mb-4 overflow-hidden border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm dark:shadow-gray-900/30 overflow-hidden border border-gray-200 dark:border-gray-700">
       {/* Post Header */}
-      <div className="p-4 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700 flex items-center justify-center text-white font-semibold">
+      <div className="p-2.5 sm:p-3 flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700 flex items-center justify-center text-white font-semibold flex-shrink-0">
             {post.authorId?.avatarUrl ? (
               <img
                 src={post.authorId.avatarUrl}
                 alt={post.authorId.username}
-                className="w-10 h-10 rounded-full object-cover"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
               />
             ) : (
-              post.authorId?.username?.[0]?.toUpperCase() || "U"
+              <span className="text-xs sm:text-sm">{post.authorId?.username?.[0]?.toUpperCase() || "U"}</span>
             )}
           </div>
           
-          <div>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
               {post.authorId?.fullName || post.authorId?.username || "Unknown User"}
             </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{formatDate(post.createdAt)}</p>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{formatDate(post.createdAt)}</p>
           </div>
         </div>
 
@@ -126,19 +126,19 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
           <div className="relative">
             <button
               onClick={() => setShowMenu(!showMenu)}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+              className="p-1 sm:p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
             >
-              <MoreHorizontal className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <MoreHorizontal className="w-4 h-4 text-gray-600 dark:text-gray-400" />
             </button>
 
             {showMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10">
+              <div className="absolute right-0 mt-2 w-36 sm:w-44 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10">
                 <button
                   onClick={handleDeleteClick}
                   disabled={isDeleting}
-                  className="w-full flex items-center space-x-2 px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
+                  className="w-full flex items-center space-x-2 px-3 py-1.5 text-xs sm:text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3.5 h-3.5" />
                   <span>Delete Post</span>
                 </button>
               </div>
@@ -149,15 +149,15 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
 
       {/* Post Content */}
       {post.content && (
-        <div className="px-4 pb-3">
-          <p className="text-gray-800 dark:text-gray-100 whitespace-pre-wrap break-words">
+        <div className="px-2.5 sm:px-3 pb-2.5 sm:pb-3">
+          <p className="text-sm sm:text-base text-gray-900 dark:text-gray-100 whitespace-pre-wrap break-words leading-relaxed">
             {isLongContent && !isExpanded ? getTruncatedContent() : post.content}
             {isLongContent && !isExpanded && '...'}
           </p>
           {isLongContent && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium text-sm mt-1 transition-colors"
+              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium text-xs sm:text-sm mt-1.5 sm:mt-2 transition-colors"
             >
               {isExpanded ? 'See less' : 'See more'}
             </button>
@@ -168,7 +168,7 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
       {/* Post Media */}
       {post.media && post.media.length > 0 && (
         <div
-          className={`grid gap-1 ${
+          className={`grid gap-0.5 sm:gap-1 ${
             post.media.length === 1
               ? "grid-cols-1"
               : post.media.length === 2
@@ -193,8 +193,8 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
                   controls
                   className={`w-full ${
                     post.media.length === 1
-                      ? "max-h-[600px] object-contain bg-gray-50 dark:bg-gray-800"
-                      : "h-64 object-cover"
+                      ? "max-h-[500px] sm:max-h-[600px] object-contain bg-gray-50 dark:bg-gray-800"
+                      : "h-48 sm:h-64 object-cover"
                   }`}
                 >
                   Your browser does not support the video tag.
@@ -205,14 +205,14 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
                   alt={`Post media ${index + 1}`}
                   className={`w-full ${
                     post.media.length === 1
-                      ? "max-h-[600px] object-contain bg-gray-50 dark:bg-gray-800"
-                      : "h-64 object-cover"
+                      ? "max-h-[500px] sm:max-h-[600px] object-contain bg-gray-50 dark:bg-gray-800"
+                      : "h-48 sm:h-64 object-cover"
                   }`}
                 />
               )}
               {index === 3 && post.media.length > 4 && (
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                  <span className="text-white text-2xl font-bold">
+                  <span className="text-white text-xl sm:text-2xl font-bold">
                     +{post.media.length - 4}
                   </span>
                 </div>
@@ -223,32 +223,32 @@ const PostCard = ({ post, currentUserId, currentUser, onPostDeleted, onPostUpdat
       )}
 
       {/* Post Stats */}
-      <div className="px-4 py-2 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700">
-        <span>{likesCount} {likesCount === 1 ? "like" : "likes"}</span>
-        <span>{commentsCount} {commentsCount === 1 ? "comment" : "comments"}</span>
+      <div className="px-2.5 sm:px-3 py-2 sm:py-2.5 flex items-center justify-between text-sm sm:text-base text-gray-700 dark:text-gray-300 border-t border-gray-100 dark:border-gray-700">
+        <span className="font-semibold">{likesCount} {likesCount === 1 ? "like" : "likes"}</span>
+        <span className="font-semibold">{commentsCount} {commentsCount === 1 ? "comment" : "comments"}</span>
       </div>
 
       {/* Action Buttons */}
-      <div className="px-4 py-2 flex items-center justify-around border-t border-gray-100 dark:border-gray-700">
+      <div className="px-2.5 sm:px-3 py-2 sm:py-2.5 flex items-center justify-around border-t border-gray-100 dark:border-gray-700">
         <button
           onClick={handleLike}
-          className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          className="flex items-center space-x-2 sm:space-x-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
         >
-          <Heart className={`w-5 h-5 transition-colors ${isLiked ? "fill-red-600 text-red-600 dark:fill-red-500 dark:text-red-500" : ""}`} />
-          <span className="font-medium">Like</span>
+          <Heart className={`w-5 h-5 sm:w-6 sm:h-6 transition-colors ${isLiked ? "fill-red-600 text-red-600 dark:fill-red-500 dark:text-red-500" : ""}`} />
+          <span className="text-sm sm:text-base font-semibold">Like</span>
         </button>
 
         <button
           onClick={() => setShowComments(!showComments)}
-          className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          className="flex items-center space-x-2 sm:space-x-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
         >
-          <MessageCircle className="w-5 h-5" />
-          <span className="font-medium">Comment</span>
+          <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+          <span className="text-sm sm:text-base font-semibold">Comment</span>
         </button>
 
-        <button className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-          <Share2 className="w-5 h-5" />
-          <span className="font-medium">Share</span>
+        <button className="flex items-center space-x-2 sm:space-x-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <Share2 className="w-5 h-5 sm:w-6 sm:h-6" />
+          <span className="text-sm sm:text-base font-semibold">Share</span>
         </button>
       </div>
 

@@ -57,7 +57,7 @@ export default function MessageInput({ onSend }) {
   return (
     <div className="border-t bg-white dark:bg-gray-800">
       {imagePreview && (
-        <div className="p-3 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-2 sm:p-3 border-b border-gray-200 dark:border-gray-700">
           <div className="relative inline-block">
             <img
               src={imagePreview}
@@ -87,7 +87,7 @@ export default function MessageInput({ onSend }) {
         </div>
       )}
 
-      <form onSubmit={handleSend} className="flex items-center gap-2 p-3">
+      <form onSubmit={handleSend} className="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-3">
         <input
           ref={fileInputRef}
           type="file"
@@ -99,11 +99,11 @@ export default function MessageInput({ onSend }) {
         <button
           type="button"
           onClick={handleImageClick}
-          className="p-2 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+          className="p-1.5 sm:p-2 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
           title="Select image"
         >
           <svg
-            className="w-6 h-6"
+            className="w-5 h-5 sm:w-6 sm:h-6"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -121,16 +121,16 @@ export default function MessageInput({ onSend }) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Enter message..."
-          className="flex-1 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
+          className="flex-1 px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded-full bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
         />
 
         <button
           type="submit"
           disabled={!text.trim() && !selectedImage}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
+          className="bg-indigo-600 text-white p-1.5 sm:p-2 rounded-full hover:bg-indigo-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
         >
           <svg
-            className="w-5 h-5"
+            className="w-4 h-4 sm:w-5 sm:h-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

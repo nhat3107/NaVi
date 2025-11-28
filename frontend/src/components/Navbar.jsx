@@ -90,22 +90,23 @@ const Navbar = () => {
 
   return (
     <>
-    <nav className="fixed left-0 top-0 h-screen w-20 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-4 z-50">
+    {/* Desktop Sidebar */}
+    <nav className="hidden md:flex fixed left-0 top-0 h-screen w-20 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-col items-center py-3 z-50">
       {/* Logo */}
       <div 
-        className="mb-8 mt-5 cursor-pointer hover:opacity-80 transition-opacity"
+        className="mb-4 mt-3 cursor-pointer hover:opacity-80 transition-opacity"
         onClick={() => navigate("/")}
       >
         <img src={NaviIcon} alt="NaVi" className="w-7 h-7" />
       </div>
 
       {/* Navigation Items */}
-      <div className="flex-1 flex flex-col space-y-3 w-full px-2">
+      <div className="flex-1 flex flex-col space-y-2 w-full px-2">
         {navItems.map((item, index) => (
           <button
             key={item.path || item.name}
             onClick={() => item.onClick ? item.onClick() : navigate(item.path)}
-            className={`relative flex items-center justify-center p-4 rounded-xl transition-colors ${
+            className={`relative flex items-center justify-center p-2.5 sm:p-3 rounded-xl transition-all duration-200 ${
               item.active
                 ? "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30"
                 : "text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -123,7 +124,7 @@ const Navbar = () => {
       </div>
 
       {/* User Profile */}
-      <div className="w-full px-2 mb-3">
+      <div className="w-full px-2 mb-2">
         <button 
           onClick={() => navigate(`/profile/${user?._id}`)}
           className="flex flex-col items-center w-full hover:opacity-80 transition-opacity"
@@ -135,16 +136,16 @@ const Navbar = () => {
                 <img
                   src={user.avatarUrl}
                   alt={user.username}
-                  className="w-11 h-11 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700"
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700"
                 />
-                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"></div>
+                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"></div>
               </div>
             ) : (
               <div className="relative">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700 flex items-center justify-center text-white font-semibold">
-                  <span className="text-lg">{user?.username?.[0]?.toUpperCase() || "U"}</span>
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700 flex items-center justify-center text-white font-semibold">
+                  <span className="text-base sm:text-lg">{user?.username?.[0]?.toUpperCase() || "U"}</span>
                 </div>
-                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"></div>
+                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"></div>
               </div>
             )}
           </div>
@@ -155,7 +156,7 @@ const Navbar = () => {
       <div className="relative w-full px-2" ref={moreMenuRef}>
         <button
           onClick={() => setShowMoreMenu(!showMoreMenu)}
-          className={`w-full flex items-center justify-center p-4 rounded-xl transition-colors ${
+          className={`w-full flex items-center justify-center p-2.5 sm:p-3 rounded-xl transition-all duration-200 ${
             showMoreMenu 
               ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30' 
               : 'text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-50 dark:hover:bg-gray-700'
@@ -169,8 +170,8 @@ const Navbar = () => {
 
         {/* More Menu */}
         {showMoreMenu && (
-          <div className="absolute bottom-0 left-full ml-3 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-2 z-50">
-            <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+          <div className="absolute bottom-0 left-full ml-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-1.5 z-50">
+            <div className="px-3 py-2.5 border-b border-gray-100 dark:border-gray-700">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700 flex items-center justify-center text-white font-semibold">
                   {user?.avatarUrl ? (
@@ -197,7 +198,7 @@ const Navbar = () => {
                 navigate("/settings");
                 setShowMoreMenu(false);
               }}
-              className="w-full flex items-center space-x-3 px-4 py-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              className="w-full flex items-center space-x-2.5 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -211,7 +212,7 @@ const Navbar = () => {
                 handleLogout();
                 setShowMoreMenu(false);
               }}
-              className="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border-t border-gray-100 dark:border-gray-700"
+              className="w-full flex items-center space-x-2.5 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border-t border-gray-100 dark:border-gray-700"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -221,6 +222,57 @@ const Navbar = () => {
           </div>
         )}
       </div>
+    </nav>
+
+    {/* Mobile Bottom Navigation */}
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex items-center justify-around z-50 safe-area-inset-bottom">
+      {navItems.slice(0, 4).map((item) => (
+        <button
+          key={item.path || item.name}
+          onClick={() => item.onClick ? item.onClick() : navigate(item.path)}
+          className={`relative flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+            item.active
+              ? "text-indigo-600 dark:text-indigo-400"
+              : "text-gray-600 dark:text-gray-400"
+          }`}
+          title={item.name}
+        >
+          <div className="w-5 h-5 mb-0.5 flex items-center justify-center">
+            {React.cloneElement(item.icon, { className: "w-5 h-5" })}
+          </div>
+          <span className="text-[10px] font-medium leading-tight">{item.name}</span>
+          {item.active && (
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-indigo-600 dark:bg-indigo-400 rounded-b-full"></div>
+          )}
+        </button>
+      ))}
+      <button
+        onClick={() => navigate(`/profile/${user?._id}`)}
+        className={`relative flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+          location.pathname === `/profile/${user?._id}` 
+            ? "text-indigo-600 dark:text-indigo-400" 
+            : "text-gray-600 dark:text-gray-400"
+        }`}
+        title="Profile"
+      >
+        <div className="w-5 h-5 mb-1">
+          {user?.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt={user.username}
+              className="w-5 h-5 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-5 h-5 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700 flex items-center justify-center text-white text-xs font-semibold">
+              {user?.username?.[0]?.toUpperCase() || "U"}
+            </div>
+          )}
+        </div>
+        <span className="text-xs font-medium">Profile</span>
+        {location.pathname === `/profile/${user?._id}` && (
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-indigo-600 dark:bg-indigo-400 rounded-b-full"></div>
+        )}
+      </button>
     </nav>
 
     {/* Search Panel */}

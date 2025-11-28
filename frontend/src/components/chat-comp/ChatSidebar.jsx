@@ -146,15 +146,15 @@ export default function Sidebar({
   }, [groupData, searchTerm]);
 
   return (
-    <div className="flex flex-col h-full p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+    <div className="flex flex-col h-full p-3 sm:p-4">
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100">
           Chats
         </h2>
         <div className="flex items-center gap-2">
           <button
             onClick={onOpenCreateGroup}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700 active:bg-indigo-800 transition-colors"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg bg-indigo-600 text-white text-xs sm:text-sm hover:bg-indigo-700 active:bg-indigo-800 transition-colors"
             title="Create a new group"
           >
             <span>＋</span>
@@ -170,9 +170,9 @@ export default function Sidebar({
         </div>
       </div>
 
-      <div className="mb-3 flex items-center gap-2 border-b border-gray-200 dark:border-gray-700">
+      <div className="mb-2.5 flex items-center gap-1.5 sm:gap-2 border-b border-gray-200 dark:border-gray-700">
         <button
-          className={`px-3 py-2 text-sm font-medium -mb-px border-b-2 transition-colors ${
+          className={`px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium -mb-px border-b-2 transition-colors ${
             activeTab === "personal"
               ? "border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400"
               : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
@@ -203,7 +203,7 @@ export default function Sidebar({
         </button>
       </div>
 
-      <div className="mb-3">
+      <div className="mb-2.5">
         <SearchInput
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -215,7 +215,7 @@ export default function Sidebar({
         />
       </div>
 
-      <div className="space-y-2 overflow-y-auto">
+      <div className="space-y-1.5 sm:space-y-2 overflow-y-auto">
         {activeTab === "users" ? (
           <>
             {searchLoading && (
@@ -233,7 +233,7 @@ export default function Sidebar({
               displayUsers.map((user) => (
                 <div
                   key={user._id}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
+                  className="flex items-center gap-2.5 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
                   onClick={() => handleCreateChat(user)}
                 >
                   <img
@@ -242,7 +242,7 @@ export default function Sidebar({
                       "https://cloudanary.s3.ap-southeast-1.amazonaws.com/basic-avatar.jpg"
                     }
                     alt={user.username}
-                    className="w-12 h-12 rounded-full object-cover"
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
                   />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-gray-800 dark:text-gray-100 truncate">
@@ -302,7 +302,7 @@ export default function Sidebar({
                 <div
                   key={chat.id}
                   onClick={() => onSelectChat?.(chat)}
-                  className={`flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors ${
+                  className={`flex items-center gap-2.5 sm:gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors ${
                     selectedChatId === chat.id
                       ? "bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700"
                       : ""
@@ -311,7 +311,7 @@ export default function Sidebar({
                   <img
                     src={chat.avatar}
                     alt={chat.name}
-                    className="w-10 h-10 rounded-full"
+                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full"
                   />
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-800 dark:text-gray-100">

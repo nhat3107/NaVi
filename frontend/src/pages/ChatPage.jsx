@@ -22,7 +22,7 @@ export default function ChatPage() {
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
-      <div className="flex flex-1 ml-20 relative overflow-hidden">
+      <div className="flex flex-1 md:ml-20 relative overflow-hidden pb-16 md:pb-0">
         {(() => {
           const mobileVisible = !selectedChat || sidebarOpen;
           const mobileClasses = mobileVisible

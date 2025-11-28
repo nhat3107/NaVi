@@ -99,15 +99,15 @@ const SearchPanel = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex pointer-events-none">
+    <div className="fixed inset-0 z-40 flex pointer-events-none">
       {/* Search Panel */}
       <div
         ref={panelRef}
-        className="w-full max-w-md bg-white dark:bg-gray-800 h-full ml-20 shadow-2xl flex flex-col pointer-events-auto border-r border-gray-200 dark:border-gray-700"
+        className="w-full md:max-w-md bg-white dark:bg-gray-800 h-full md:h-full md:ml-20 pb-16 md:pb-0 shadow-2xl flex flex-col pointer-events-auto border-r border-gray-200 dark:border-gray-700"
       >
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Search</h2>
+        <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">Search</h2>
           <SearchInput
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}

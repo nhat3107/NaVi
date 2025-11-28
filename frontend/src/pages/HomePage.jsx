@@ -9,7 +9,7 @@ const HomePage = () => {
   return (
     <div className="h-screen bg-gray-50 dark:bg-gray-900 flex overflow-hidden">
       <Navbar />
-      <div className="flex-1 ml-20 overflow-y-auto">
+      <div className="flex-1 md:ml-20 pb-16 md:pb-0 overflow-y-auto">
         <FeedContainer currentUser={authUser} feedType="feed" />
       </div>
     </div>

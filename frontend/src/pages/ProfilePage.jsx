@@ -48,8 +48,8 @@ const ProfilePage = () => {
     return (
       <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
-        <div className="flex-1 ml-20 flex items-center justify-center">
-          <div className="text-lg text-gray-600 dark:text-gray-400">Loading profile...</div>
+        <div className="flex-1 md:ml-20 pb-16 md:pb-0 flex items-center justify-center">
+          <div className="text-base sm:text-lg text-gray-600 dark:text-gray-400">Loading profile...</div>
         </div>
       </div>
     );
@@ -59,13 +59,13 @@ const ProfilePage = () => {
     return (
       <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
-        <div className="flex-1 ml-20 flex items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">User not found</h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">This user doesn't exist or has been removed.</p>
+        <div className="flex-1 md:ml-20 pb-16 md:pb-0 flex items-center justify-center">
+          <div className="text-center px-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">User not found</h2>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4">This user doesn't exist or has been removed.</p>
             <button
               onClick={() => navigate("/")}
-              className="px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600"
+              className="px-4 py-2 text-sm sm:text-base bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600"
             >
               Go Home
             </button>
@@ -79,8 +79,8 @@ const ProfilePage = () => {
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
       
-      <div className="flex-1 ml-20 overflow-y-auto">
-        <div className="max-w-3xl mx-auto p-6">
+      <div className="flex-1 md:ml-20 overflow-y-auto pb-16 md:pb-0">
+        <div className="max-w-3xl mx-auto p-3 sm:p-4 md:p-6">
           {/* Header */}
           <ProfileHeader
             profileUser={profileUser}

@@ -25,11 +25,11 @@ export default function MessageBubble({ message }) {
           <img
             src={message.senderId.avatarUrl}
             alt={message.senderId.username || "avatar"}
-            className="w-6 h-6 rounded-full self-end"
+            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full self-end flex-shrink-0"
           />
         )}
         <div
-          className={`px-4 py-2 rounded-2xl max-w-xs md:max-w-md ${
+          className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl max-w-[75%] sm:max-w-xs md:max-w-md text-sm sm:text-base ${
             isMe
               ? "bg-indigo-600 dark:bg-indigo-500 text-white rounded-br-none"
               : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-bl-none"
