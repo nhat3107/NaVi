@@ -77,7 +77,9 @@ export const signIn = async (req, res) => {
   try {
     // Validate input
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
 
     // Basic email validation
@@ -88,7 +90,9 @@ export const signIn = async (req, res) => {
 
     // Basic password validation (minimum length)
     if (password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
     }
 
     // Kiểm tra xem user đã tồn tại chưa
@@ -121,8 +125,9 @@ export const signIn = async (req, res) => {
 
     // Check if user has password (OAuth users might not have password)
     if (!user.passwordHash) {
-      return res.status(400).json({ 
-        message: "This account was created with OAuth. Please use OAuth to sign in." 
+      return res.status(400).json({
+        message:
+          "This account was created with OAuth. Please use OAuth to sign in.",
       });
     }
 
@@ -264,6 +269,7 @@ export const verifyOTP = async (req, res) => {
     // Tạo user mới với email đã verified
     const newUser = await createUser({
       email,
+      username: email.split("@")[0],
       passwordHash: otpRecord.passwordHash, // Lấy password từ TempOTP
       authMethods: ["email"],
       isEmailVerified: true, // Email đã được verify
